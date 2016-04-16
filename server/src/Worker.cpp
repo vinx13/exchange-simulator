@@ -1,3 +1,4 @@
+#include <iostream>
 #include "Worker.h"
 
 void Worker::workerMain(Worker *worker) {
@@ -12,11 +13,13 @@ void Worker::registerConnection(evutil_socket_t fd, short what, void *arg) {
     Worker *worker = static_cast<Worker *>(arg);
 
     std::unique_lock<std::mutex> lock(worker->conn_mutex_);
-    evutil_socket_t conn_fd = worker->new_conn_fds_.front();
-    worker->new_conn_fds_.pop();
-    worker->conn_fds_.push_back(fd);
-    event *read_event = event_new(worker->event_base_, conn_fd, EV_READ | EV_PERSIST, readRequest, worker);
-    event_add(read_event, NULL);
+    while (!worker->new_conn_fds_.empty()) {
+        evutil_socket_t conn_fd = worker->new_conn_fds_.front();
+        worker->new_conn_fds_.pop();
+        worker->conn_fds_.push_back(fd);
+        event *read_event = event_new(worker->event_base_, conn_fd, EV_READ | EV_PERSIST, readRequest, worker);
+        event_add(read_event, NULL);
+    }
 }
 
 Worker::Worker(evutil_socket_t notify_conn_fd) : notify_conn_fd_(notify_conn_fd) {
