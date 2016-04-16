@@ -23,6 +23,7 @@ public:
 
     static void readBuffer(bufferevent *bev, void *arg);
 
+
     Worker(evutil_socket_t notify_conn_fd);
 
     ~Worker();
@@ -34,6 +35,8 @@ public:
     void putConnection(evutil_socket_t fd);
 
     BufferContext *bufferContextAlloc();
+
+    void processInput(const char *buf, const int len, BufferContext *context);
 
 private:
     std::unique_ptr<std::thread> worker_thread_;

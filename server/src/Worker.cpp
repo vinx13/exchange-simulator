@@ -33,7 +33,15 @@ void Worker::workerMain(Worker *worker) {
 
 void Worker::readBuffer(bufferevent *bev, void *arg) {
     BufferContext *context = static_cast<BufferContext *>(arg);
+    const int BUF_SIZE = 1024;
+    char buf[BUF_SIZE];
+    int len = bufferevent_read(bev, buf, BUF_SIZE);
+    context->worker->processInput(buf, len, context);
+}
 
+
+
+/***
     if (context->header_remained_len > 0) {
         char buf[EXPECT_HEADER_LEN];
         int read_len = bufferevent_read(bev, buf, context->header_remained_len);
@@ -78,7 +86,9 @@ void Worker::readBuffer(bufferevent *bev, void *arg) {
             context->reset();
         }
     }
-}
+ }
+    ***/
+
 
 Worker::~Worker() {
     for (auto context:buffer_contexts_)
@@ -122,4 +132,42 @@ void Worker::putConnection(evutil_socket_t sfd) {
     new_conn_fds_.push(sfd);
     lock.unlock();
 }
+
+void Worker::processInput(const char *buf, const int len, BufferContext *context) {
+    int processed = 0;
+    while (processed < len) {
+        if (context->header_cur_pos < EXPECT_HEADER_LEN) {
+            if (EXPECT_HEADER[context->header_cur_pos++] == buf[processed]) {
+                context->data.push_back(buf[processed++]);
+            } else {
+                //TODO: Error
+                //goto next valid character
+                context->reset();
+                while (++processed < len && buf[processed] != 1);
+                ++processed;
+            }
+        } else if (context->body_remained_len == -1) {
+            if (isdigit(buf[processed])) {
+                context->data.push_back(buf[processed++]);
+            } else if (buf[processed] == 1) {
+                context->data.push_back(buf[processed++]);
+                auto start = context->data.begin() + EXPECT_HEADER_LEN;
+                auto end = context->data.end();
+                context->body_remained_len = std::stoi(std::string(start, end));
+            } else {
+                //TODO: Error
+                context->reset();
+                while (++processed < len && buf[processed] != 1);
+                ++processed;
+            }
+        } else {
+            context->data.push_back(buf[processed++]);
+            if (--context->body_remained_len == 0) {
+                //TODO: Process message
+                context->reset();
+            }
+        }
+    }
+}
+
 
