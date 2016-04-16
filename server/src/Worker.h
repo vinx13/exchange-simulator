@@ -8,12 +8,16 @@
 #include <thread>
 #include <mutex>
 #include <event2/event.h>
+#include <event2/buffer.h>
+#include <event2/bufferevent.h>
 
 class Worker {
 public:
     static void workerMain(Worker *worker);
 
     static void registerConnection(evutil_socket_t fd, short what, void *arg);
+
+    static void readBuffer(bufferevent *bev, short events, void *arg);
 
     static void readRequest(evutil_socket_t fd, short what, void *arg);
 

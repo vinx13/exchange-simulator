@@ -1,4 +1,3 @@
-#include <iostream>
 #include "Worker.h"
 
 void Worker::workerMain(Worker *worker) {
@@ -9,6 +8,10 @@ void Worker::readRequest(evutil_socket_t fd, short what, void *arg) {
 
 }
 
+void Worker::readBuffer(bufferevent *bev, short events, void *arg) {
+    
+}
+
 void Worker::registerConnection(evutil_socket_t fd, short what, void *arg) {
     Worker *worker = static_cast<Worker *>(arg);
 
@@ -17,8 +20,17 @@ void Worker::registerConnection(evutil_socket_t fd, short what, void *arg) {
         evutil_socket_t conn_fd = worker->new_conn_fds_.front();
         worker->new_conn_fds_.pop();
         worker->conn_fds_.push_back(fd);
+        /*
         event *read_event = event_new(worker->event_base_, conn_fd, EV_READ | EV_PERSIST, readRequest, worker);
         event_add(read_event, NULL);
+         */
+
+        //use buffer
+        evutil_make_socket_nonblocking(conn_fd);
+        bufferevent *read_bev = bufferevent_socket_new(worker->event_base_, conn_fd, BEV_OPT_CLOSE_ON_FREE);
+        const int BUFFER_LEAST_BYTES = 1; //FIXME
+        bufferevent_setwatermark(read_bev,EV_READ, BUFFER_LEAST_BYTES, 0 /* unlimited */);
+        bufferevent_setcb(read_bev,readBuffer,NULL /* FIXME: writeBuffer */, NULL /*Fixme: process error*/, this);
     }
 }
 
@@ -41,3 +53,4 @@ void Worker::putConnection(evutil_socket_t sfd) {
     new_conn_fds_.push(sfd);
     lock.unlock();
 }
+
