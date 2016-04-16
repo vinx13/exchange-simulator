@@ -11,23 +11,29 @@
 #include <event2/buffer.h>
 #include <event2/bufferevent.h>
 
+
+struct BufferContext;
+
 class Worker {
 public:
+
     static void workerMain(Worker *worker);
 
     static void registerConnection(evutil_socket_t fd, short what, void *arg);
 
-    static void readBuffer(bufferevent *bev, short events, void *arg);
-
-    static void readRequest(evutil_socket_t fd, short what, void *arg);
+    static void readBuffer(bufferevent *bev, void *arg);
 
     Worker(evutil_socket_t notify_conn_fd);
+
+    ~Worker();
 
     void start();
 
     void stop();
 
     void putConnection(evutil_socket_t fd);
+
+    BufferContext *bufferContextAlloc();
 
 private:
     std::unique_ptr<std::thread> worker_thread_;
@@ -36,6 +42,7 @@ private:
     std::mutex conn_mutex_;
     evutil_socket_t notify_conn_fd_;
     event_base *event_base_;
+    std::vector<BufferContext *> buffer_contexts_;
 };
 
 
