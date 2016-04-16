@@ -32,6 +32,7 @@ public:
 private:
     const Config config_;
     std::vector<std::shared_ptr<Worker> > workers_;
+    std::vector<evutil_socket_t> worker_fds_;
     event_base *event_base_;
     evconnlistener *evconn_listener_;
 

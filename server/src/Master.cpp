@@ -6,9 +6,17 @@
 
 Master::Master(const Config *config) : config_(*config) {
     event_base_ = event_base_new();
+
     for (int i = 0; i < config_.num_workers; i++) {
-        workers_.push_back(std::make_shared<Worker>());
+        int fds[2];
+        if(socketpair(AF_UNIX, SOCK_STREAM, 0, fds) == -1){
+            //TODO: Error
+        } else {
+            worker_fds_.push_back(fds[0]);
+            workers_.push_back(std::make_shared<Worker>(fds[1]));
+        }
     }
+
     sockaddr_in sin;
     memset(&sin, 0, sizeof(sin));
     sin.sin_family = AF_INET;
