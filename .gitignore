@@ -26,3 +26,7 @@
 *.exe
 *.out
 *.app
+
+*.log
+.Po
+.DS_Store
