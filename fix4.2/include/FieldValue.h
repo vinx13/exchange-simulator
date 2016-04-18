@@ -2,8 +2,8 @@
 #define EXCHANGESIMULATOR_FIX42_FIELDVALUE_H
 
 
-#include "fix4.2/include/Common.h"
-#include "fix4.2/include/Exceptions.h"
+#include "Common.h"
+#include "Exceptions.h"
 #include <string>
 #include <vector>
 

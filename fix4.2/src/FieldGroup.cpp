@@ -22,4 +22,11 @@ bool FieldGroup::contains(Tag tag) const noexcept {
     return fields_.find(tag) == fields_.cend();
 }
 
+std::string FieldGroup::toString() const noexcept {
+    std::string result;
+    for(auto field: fields_){
+        result+=std::to_string(field.first) + '=' + field.second->toString() + DELIMITER;
+    }
+    return result;
+}
 __FIX42_END

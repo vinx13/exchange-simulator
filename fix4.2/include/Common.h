@@ -13,9 +13,11 @@
 #include <memory>
 
 __FIX42_BEGIN
+
 class FieldValue;
-typedef std::string::iterator StrIterator;
+class FieldGroup;
 typedef std::shared_ptr<FieldValue> FieldValuePtr;
+typedef std::shared_ptr<FieldGroup> FieldGroupPtr;
 typedef int Tag;
 
 enum kFieldType {
