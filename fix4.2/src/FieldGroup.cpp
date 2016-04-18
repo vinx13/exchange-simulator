@@ -1,4 +1,4 @@
-#include "fix4.2/include/FieldGroup.h"
+#include "FieldGroup.h"
 
 
 __FIX42_BEGIN

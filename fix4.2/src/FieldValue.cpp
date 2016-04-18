@@ -1,4 +1,4 @@
-#include "fix4.2/include/FieldValue.h"
+#include "FieldValue.h"
 
 __FIX42_BEGIN
 
