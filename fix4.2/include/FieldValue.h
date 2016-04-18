@@ -27,7 +27,7 @@ public:
 class IntFieldValue : public FieldValue {
 public:
 
-    IntFieldValue(const int value) : value_(value) { }
+    explicit IntFieldValue(const int value) : value_(value) { }
 
     virtual std::string toString() const;
 
@@ -40,7 +40,7 @@ private:
 class CharFieldValue : public FieldValue {
 public:
 
-    CharFieldValue(const char value) : value_(value) { }
+    explicit CharFieldValue(const char value) : value_(value) { }
 
     virtual std::string toString() const;
 
@@ -55,7 +55,7 @@ public:
 
     StringFieldValue(std::string::const_iterator begin, std::string::const_iterator end) : value_(begin, end) { }
 
-    StringFieldValue(const std::string s) : value_(s) { }
+    explicit StringFieldValue(const std::string s) : value_(s) { }
 
     virtual std::string toString() const;
 
@@ -68,7 +68,7 @@ private:
 class FloatFieldValue : public FieldValue {
 public:
 
-    FloatFieldValue(double value) : value_(value) { }
+    explicit FloatFieldValue(double value) : value_(value) { }
 
     virtual std::string toString() const;
 
