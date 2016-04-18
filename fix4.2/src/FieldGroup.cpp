@@ -1,16 +1,25 @@
-#include "FieldGroup.h"
+#include "fix4.2/include/FieldGroup.h"
 
-const std::shared_ptr<FieldValue *> FieldGroup::get(FieldGroup::Tag tag) const {
+
+__FIX42_BEGIN
+
+const FieldValuePtr FieldGroup::get(Tag tag) const noexcept {
     auto it = fields_.find(tag);
-    return it == fields_.end() ?
-           std::shared_ptr<FieldValue *>() : it->second;
+
+    return (it != fields_.cend()) ?
+           it->second : FieldValuePtr();
 }
 
-bool FieldGroup::set(Tag tag, std::shared_ptr<FieldValue *> value, bool override) {
+void FieldGroup::set(Tag tag, FieldValuePtr value, bool override) throw(DuplicateTag) {
     if (override || fields_.find(tag) == fields_.end()) {
         //override or key does not exist
         fields_[tag] = value;
-        return true;
     }
-    return false;
+    throw DuplicateTag();
 }
+
+bool FieldGroup::contains(Tag tag) const noexcept {
+    return fields_.find(tag) == fields_.cend();
+}
+
+__FIX42_END
