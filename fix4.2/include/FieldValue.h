@@ -55,6 +55,8 @@ public:
 
     StringFieldValue(std::string::const_iterator begin, std::string::const_iterator end) : value_(begin, end) { }
 
+    StringFieldValue(const std::string s) : value_(s) { }
+
     virtual std::string toString() const;
 
     const std::string &getValue() const { return value_; }
@@ -84,6 +86,11 @@ public:
         len_ = end - begin;
     }
 
+    DataFieldValue(const char *data, int len) : len_(len) {
+        value_ = new char[len];
+        std::copy(data, data + len, value_);
+    }
+
     ~DataFieldValue() { delete[] value_; }
 
     virtual std::string toString() const;
@@ -96,7 +103,6 @@ private:
     char *value_;
     int len_;
 };
-
 
 
 template<kFieldType>
