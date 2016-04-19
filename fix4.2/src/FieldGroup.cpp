@@ -14,12 +14,13 @@ void FieldGroup::set(Tag tag, FieldValuePtr value, bool override) throw(Duplicat
     if (override || fields_.find(tag) == fields_.end()) {
         //override or key does not exist
         fields_[tag] = value;
+        return;
     }
     throw DuplicateTag();
 }
 
 bool FieldGroup::contains(Tag tag) const noexcept {
-    return fields_.find(tag) == fields_.cend();
+    return fields_.find(tag) != fields_.cend();
 }
 
 std::string FieldGroup::toString() const noexcept {

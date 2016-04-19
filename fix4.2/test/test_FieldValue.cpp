@@ -1,24 +1,6 @@
 #include "gtest/gtest.h"
 #include "fix4.2/Fix42.h"
-
-/* create smart pointer to FieldValue from string */
-template<Fix42::kFieldType FIELD_TYPE>
-static std::shared_ptr<
-        typename Fix42::FieldValueType<FIELD_TYPE>::Type>
-fromString(const char *s) {
-    return std::static_pointer_cast<
-            typename Fix42::FieldValueType<FIELD_TYPE>::Type>(
-            Fix42::FieldValue::fromString(FIELD_TYPE, std::string(s))
-    );
-}
-
-/* create smarter pointer to FieldValue from its constructor directly */
-template<Fix42::kFieldType FIELD_TYPE, class ...Arg>
-static std::shared_ptr<
-        typename Fix42::FieldValueType<FIELD_TYPE>::Type>
-fromValue(Arg ...arg) {
-    return std::make_shared<typename Fix42::FieldValueType<FIELD_TYPE>::Type>(std::forward<Arg>(arg)...);
-};
+#include "util.h"
 
 TEST(TestFieldValue, CharFieldValue) {
     EXPECT_EQ('a', fromString<Fix42::kFieldType::Char>("a")->getValue());
@@ -57,7 +39,7 @@ TEST(TestFieldValue, DataFieldValue) {
         EXPECT_EQ(src[i], begin[i]);
     }
 
-    auto expect = std::string(src)+'\001';
+    auto expect = std::string(src) + '\001';
     EXPECT_EQ(expect, fromValue<Fix42::kFieldType::Data>(src, 10)->toString());
     EXPECT_EQ(expect, data->toString());
 }
