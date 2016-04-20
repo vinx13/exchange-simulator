@@ -9,20 +9,20 @@
 
 __FIX42_BEGIN
 
-class FieldValue;
-
 template<class T>
 class FieldContainer {
 public:
-    typedef std::map<Tag, std::shared_ptr<T>> Container;
 
-    const FieldValuePtr get(Tag tag) const noexcept {
+    typedef std::shared_ptr<T> PtrType;
+    typedef std::map<Tag, PtrType> Container;
+
+    const PtrType get(Tag tag) const noexcept {
         auto it = fields_.find(tag);
         return (it != fields_.cend()) ?
                it->second : FieldValuePtr();
     }
 
-    void set(Tag tag, FieldValuePtr value, bool override = true) throw(DuplicateTag) {
+    void set(Tag tag, PtrType value, bool override = true) throw(DuplicateTag) {
         if (override || fields_.find(tag) == fields_.end()) {
             //override or key does not exist
             fields_[tag] = value;
