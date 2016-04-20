@@ -3,7 +3,7 @@
 
 
 #include "Common.h"
-#include "FieldGroup.h"
+#include "FieldContainer.h"
 #include <vector>
 #include <memory>
 
@@ -12,18 +12,16 @@ __FIX42_BEGIN
 
 class RepeatGroup {
 public:
-    typedef std::vector<FieldGroupPtr> Container;
+    int count() const { return container_.count(); }
 
-    int count() const { return fields_.size(); }
+    FieldValueContainer &getGroups() { return container_; }
 
-    Container &getFields() { return fields_; }
-
-    const Container &getFields() const { return fields_; }
+    const FieldValueContainer &getValueContainer() const { return container_; }
 
     std::string toString() const;
 
 private:
-    Container fields_;
+    FieldValueContainer container_;
 };
 
 __FIX42_END
