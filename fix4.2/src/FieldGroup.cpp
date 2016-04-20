@@ -30,4 +30,5 @@ std::string FieldGroup::toString() const noexcept {
     }
     return result;
 }
+
 __FIX42_END
