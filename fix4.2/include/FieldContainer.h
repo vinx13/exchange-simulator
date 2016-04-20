@@ -14,6 +14,8 @@ class FieldValue;
 template<class T>
 class FieldContainer {
 public:
+    typedef std::map<Tag, std::shared_ptr<T>> Container;
+
     const FieldValuePtr get(Tag tag) const noexcept {
         auto it = fields_.find(tag);
         return (it != fields_.cend()) ?
@@ -41,8 +43,17 @@ public:
         return result;
     }
 
+    Container::size_type count() const {
+        return fields_.size();
+    };
+
+    Container::iterator begin() { return fields_.begin(); }
+    Container::iterator end() { return fields_.end(); }
+    Container::const_iterator begin() const { return fields_.begin(); }
+    Container::const_iterator end() const { return fields_.end(); }
+
 private:
-    std::map<Tag, std::shared_ptr<T>> fields_;
+    Container fields_;
 };
 
 class FieldValue;
