@@ -33,7 +33,6 @@ enum kFieldName {
 
 };
 
-const std::map<kFieldType, kFieldName>
 const char DELIMITER = '\001';
 
 __FIX42_END

@@ -115,11 +115,11 @@ struct FieldValueType<kFieldType::ENUM_VALUE>{ \
     typedef TYPE Type; \
 };
 
-DECLARE_TYPE_MAP(Char, CharFieldValue)
-DECLARE_TYPE_MAP(Int, IntFieldValue)
-DECLARE_TYPE_MAP(Data, DataFieldValue)
-DECLARE_TYPE_MAP(String, StringFieldValue)
-DECLARE_TYPE_MAP(Float, FloatFieldValue)
+DECLARE_TYPE_MAP(kChar, CharFieldValue)
+DECLARE_TYPE_MAP(kInt, IntFieldValue)
+DECLARE_TYPE_MAP(kData, DataFieldValue)
+DECLARE_TYPE_MAP(kString, StringFieldValue)
+DECLARE_TYPE_MAP(kFloat, FloatFieldValue)
 
 
 __FIX42_END

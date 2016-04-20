@@ -17,7 +17,7 @@ public:
     static const FieldTypeMapPtr getInstance() { return instance_; }
 
 private:
-    FieldTypeMap() { }
+    FieldTypeMap();
 
     static FieldTypeMapPtr instance_;
     std::map<Tag, kFieldType> map_;
