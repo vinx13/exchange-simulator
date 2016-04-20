@@ -46,4 +46,5 @@ std::string FloatFieldValue::toString() const {
 std::string IntFieldValue::toString() const {
     return std::to_string(value_) + DELIMITER;
 }
+
 __FIX42_END

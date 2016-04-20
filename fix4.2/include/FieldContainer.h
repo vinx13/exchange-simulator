@@ -43,14 +43,14 @@ public:
         return result;
     }
 
-    Container::size_type count() const {
+    typename Container::size_type count() const {
         return fields_.size();
     };
 
-    Container::iterator begin() { return fields_.begin(); }
-    Container::iterator end() { return fields_.end(); }
-    Container::const_iterator begin() const { return fields_.begin(); }
-    Container::const_iterator end() const { return fields_.end(); }
+    typename Container::iterator begin() { return fields_.begin(); }
+    typename Container::iterator end() { return fields_.end(); }
+    typename Container::const_iterator begin() const { return fields_.begin(); }
+    typename Container::const_iterator end() const { return fields_.end(); }
 
 private:
     Container fields_;

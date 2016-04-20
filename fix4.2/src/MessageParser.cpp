@@ -14,14 +14,18 @@ Tag MessageParser::goNextTag() {
 
 FieldValuePtr MessageParser::goNextFieldValue(kFieldType type, size_t len) {
     //Data field must specify len
-    if(len != -1){
+    if (len != -1) {
         return FieldValue::fromString(type, begin_, begin_ + len);
     }
-    auto soh  = std::find(begin_, end_, '\001');
-    if(soh == end_) {
+    auto soh = std::find(begin_, end_, '\001');
+    if (soh == end_) {
         throw BadFieldValue();
     }
     return FieldValue::fromString(type, begin_, end_);
+}
+
+bool MessageParser::isDone() const {
+    return begin_ == end_;
 }
 
 __FIX42_END
