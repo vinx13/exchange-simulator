@@ -17,6 +17,8 @@ public:
 
     FieldValuePtr goNextFieldValue(kFieldType type, size_t len = -1);
 
+    bool isDone() const;
+
 private:
     std::string::iterator begin_, end_;
 };
