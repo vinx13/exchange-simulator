@@ -3,22 +3,22 @@
 __FIX42_BEGIN
 
 FieldValuePtr FieldValue::fromString(const kFieldType type, const std::string &s) {
-    return FieldValue::fromStringRange(type, s.cbegin(), s.cend());
+    return FieldValue::fromString(type, s.cbegin(), s.cend());
 }
 
-FieldValuePtr FieldValue::fromStringRange(const kFieldType type,
-                                          std::string::const_iterator begin,
-                                          std::string::const_iterator end) {
+FieldValuePtr FieldValue::fromString(const kFieldType type,
+                                     std::string::const_iterator begin,
+                                     std::string::const_iterator end) {
     switch (type) {
-        case Char:
+        case kChar:
             return std::make_shared<CharFieldValue>(*begin);
-        case Int:
+        case kInt: case kRepeatGroup:
             return std::make_shared<IntFieldValue>(std::stoi(std::string(begin, end)));
-        case Float:
+        case kFloat:
             return std::make_shared<FloatFieldValue>(std::stod(std::string(begin, end)));
-        case String:
+        case kString:
             return std::make_shared<StringFieldValue>(begin, end);
-        case Data:
+        case kData:
             return std::make_shared<DataFieldValue>(begin, end);
         default:
             throw BadFieldType();

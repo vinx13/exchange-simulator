@@ -15,9 +15,9 @@ public:
 
     static FieldValuePtr fromString(const kFieldType type, const std::string &s);
 
-    static FieldValuePtr fromStringRange(const kFieldType type,
-                                         std::string::const_iterator begin,
-                                         std::string::const_iterator end);
+    static FieldValuePtr fromString(const kFieldType type,
+                                    std::string::const_iterator begin,
+                                    std::string::const_iterator end);
 
     virtual std::string toString() const = 0;
 
@@ -97,11 +97,11 @@ public:
 
     const char *getValue() const { return value_; }
 
-    int getLength() const { return len_; }
+    size_t getLength() const { return len_; }
 
 private:
     char *value_;
-    int len_;
+    size_t len_;
 };
 
 

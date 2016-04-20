@@ -16,13 +16,24 @@ __FIX42_BEGIN
 
 class FieldValue;
 class FieldGroup;
+class RepeatGroup;
+class FieldTypeMap;
+
 typedef std::shared_ptr<FieldValue> FieldValuePtr;
 typedef std::shared_ptr<FieldGroup> FieldGroupPtr;
+typedef std::shared_ptr<RepeatGroup> RepeatGroupPtr;
+typedef std::shared_ptr<FieldTypeMap> FieldTypeMapPtr;
 typedef int Tag;
 
 enum kFieldType {
-    Int, Char, Float, String, Data
+    kInt, kChar, kFloat, kString, kData, kRepeatGroup
 };
+
+enum kFieldName {
+
+};
+
+const std::map<kFieldType, kFieldName>
 const char DELIMITER = '\001';
 
 __FIX42_END
