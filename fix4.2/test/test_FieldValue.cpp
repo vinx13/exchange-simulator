@@ -3,9 +3,9 @@
 #include "util.h"
 
 TEST(TestFieldValue, CharFieldValue) {
-    EXPECT_EQ('a', fromString<Fix42::kFieldType::kkChar>("a")->getValue());
+    EXPECT_EQ('a', fromString<Fix42::kFieldType::kChar>("a")->getValue());
 
-    EXPECT_EQ("a\001", fromValue<Fix42::kFieldType::kkChar>('a')->toString());
+    EXPECT_EQ("a\001", fromValue<Fix42::kFieldType::kChar>('a')->toString());
 }
 
 TEST(TestFieldValue, IntFieldValue) {
