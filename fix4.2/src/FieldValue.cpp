@@ -49,7 +49,7 @@ std::string IntFieldValue::toString() const {
     return std::to_string(value_) + DELIMITER;
 }
 
-std::string FloatFieldValue::toString() const {
+std::string LengthFieldValue::toString() const {
     return std::to_string(value_) + DELIMITER;
 }
 

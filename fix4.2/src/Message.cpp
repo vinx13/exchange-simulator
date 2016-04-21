@@ -31,8 +31,9 @@ void Message::parse() {
                 auto field_value = parser_.goNextFieldValue(type_map->get(t));
                 group_container.set(t, field_value);
             }
-            repeat_groups_.set(tag,repeat_group);
-
+            repeat_groups_.set(tag, repeat_group);
+        } else if(kFieldType::kLength == type_map->get(tag)) {
+            //TODO
         } else {
             auto field_value = parser_.goNextFieldValue(type_map->get(tag));
             field_values_.set(tag, field_value);
