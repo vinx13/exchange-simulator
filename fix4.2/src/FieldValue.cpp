@@ -10,16 +10,18 @@ FieldValuePtr FieldValue::fromString(const kFieldType type,
                                      std::string::const_iterator begin,
                                      std::string::const_iterator end) {
     switch (type) {
-        case kChar:
+        case kFieldType::kChar:
             return std::make_shared<CharFieldValue>(*begin);
-        case kInt: case kRepeatGroup:
+        case kFieldType::kInt: case kFieldType::kRepeatGroup:
             return std::make_shared<IntFieldValue>(std::stoi(std::string(begin, end)));
-        case kFloat:
+        case kFieldType::kFloat:
             return std::make_shared<FloatFieldValue>(std::stod(std::string(begin, end)));
-        case kString:
+        case kFieldType::kString:
             return std::make_shared<StringFieldValue>(begin, end);
-        case kData:
+        case kFieldType::kData:
             return std::make_shared<DataFieldValue>(begin, end);
+        case kFieldType::kLength:
+            return std::make_shared<LengthFieldValue>(begin, end);
         default:
             throw BadFieldType();
     }
@@ -44,6 +46,10 @@ std::string FloatFieldValue::toString() const {
 }
 
 std::string IntFieldValue::toString() const {
+    return std::to_string(value_) + DELIMITER;
+}
+
+std::string FloatFieldValue::toString() const {
     return std::to_string(value_) + DELIMITER;
 }
 

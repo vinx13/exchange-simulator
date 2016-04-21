@@ -10,9 +10,9 @@ __FIX42_BEGIN
 
 class FieldTypeMap {
 public:
-    kFieldType get(Tag tag);
+    kFieldType get(Tag tag) { return map_[tag]; }
 
-    kFieldType get(kFieldName name);
+    kFieldType get(kFieldName name) { return map_[Tag(name)]; };
 
     static const FieldTypeMapPtr getInstance() { return instance_; }
 

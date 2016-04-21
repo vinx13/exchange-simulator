@@ -64,4 +64,4 @@ typedef FieldContainer<RepeatGroup> RepeatGroupContainer;
 
 __FIX42_END
 
-#endif //EXCHANGESIMULATOR_FIX42_FIELDGROUP_H
+#endif //EXCHANGESIMULATOR_FIX42_FIELDCONTAINER_H
