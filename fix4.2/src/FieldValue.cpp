@@ -16,12 +16,12 @@ FieldValuePtr FieldValue::fromString(const kFieldType type,
             return std::make_shared<IntFieldValue>(std::stoi(std::string(begin, end)));
         case kFieldType::kFloat:
             return std::make_shared<FloatFieldValue>(std::stod(std::string(begin, end)));
+        case kFieldType::kLength:
+            return std::make_shared<LengthFieldValue>(std::stoul(std::string(begin, end)));
         case kFieldType::kString:
             return std::make_shared<StringFieldValue>(begin, end);
         case kFieldType::kData:
             return std::make_shared<DataFieldValue>(begin, end);
-        case kFieldType::kLength:
-            return std::make_shared<LengthFieldValue>(begin, end);
         default:
             throw BadFieldType();
     }

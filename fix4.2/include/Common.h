@@ -17,10 +17,12 @@ __FIX42_BEGIN
 class FieldValue;
 class RepeatGroup;
 class FieldTypeMap;
+class Message;
 
 typedef std::shared_ptr<FieldValue> FieldValuePtr;
 typedef std::shared_ptr<RepeatGroup> RepeatGroupPtr;
 typedef std::shared_ptr<FieldTypeMap> FieldTypeMapPtr;
+typedef std::shared_ptr<Message> MessagePtr;
 typedef int Tag;
 
 const char DELIMITER = '\001';
@@ -463,6 +465,54 @@ enum class kFieldName : Tag {
     kEncodedListStatusText = 446
 };
 
+enum class MessageType : char {
+    kHeartbeat = '0',
+    kTestRequest = '1',
+    kResendRequest = '2',
+    kReject = '3',
+    kSequenceReset = '4',
+    kLogout = '5',
+    kIOI = '6',
+    kAdvertisement = '7',
+    kExecutionReport = '8',
+    kOrderCancelReject = '9',
+    kLogon = 'A',
+    kNews = 'B',
+    kEmail = 'C',
+    kNewOrderSingle = 'D',
+    kNewOrderList = 'E',
+    kOrderCancelRequest = 'F',
+    kOrderCancelReplaceRequest = 'G',
+    kOrderStatusRequest = 'H',
+    kAllocation = 'J',
+    kListCancelRequest = 'K',
+    kListExecute = 'L',
+    kListStatusRequest = 'M',
+    kListStatus = 'N',
+    kAllocationInstructionAck = 'P',
+    kDontKnowTrade = 'Q',
+    kQuoteRequest = 'R',
+    kQuote = 'S',
+    kSettlementInstructions = 'T',
+    kMarketDataRequest = 'V',
+    kMarketDataSnapshotFullRefresh = 'W',
+    kMarketDataIncrementalRefresh = 'X',
+    kMarketDataRequestReject = 'Y',
+    kQuoteCancel = 'Z',
+    kQuoteStatusRequest = 'a',
+    kQuoteAcknowledgement = 'b',
+    kSecurityDefinitionRequest = 'c',
+    kSecurityDefinition = 'd',
+    kSecurityStatusRequest = 'e',
+    kSecurityStatus = 'f',
+    kTradingSessionStatusRequest = 'g',
+    kTradingSessionStatus = 'h',
+    kMassQuote = 'i',
+    kBusinessMessageReject = 'j',
+    kBidRequest = 'k',
+    kBidResponse = 'l',
+    kListStrikePrice = 'm'
+};
 
 __FIX42_END
 
