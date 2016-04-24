@@ -9,6 +9,7 @@
 
 __FIX42_BEGIN
 
+/* Top level field container, storing fields and repeating groups */
 template<class T>
 class FieldContainer {
 public:
@@ -18,8 +19,8 @@ public:
 
     const PtrType get(Tag tag) const noexcept {
         auto it = fields_.find(tag);
-        return (it != fields_.cend()) ?
-               it->second : FieldValuePtr();
+        return (it != fields_.end()) ?
+               it->second : PtrType();
     }
 
     void set(Tag tag, PtrType value, bool override = true) throw(DuplicateTag) {
@@ -61,6 +62,8 @@ class RepeatGroup;
 
 typedef FieldContainer<FieldValue> FieldValueContainer;
 typedef FieldContainer<RepeatGroup> RepeatGroupContainer;
+typedef std::shared_ptr<FieldValueContainer> FieldValueContainerPtr;
+typedef std::shared_ptr<RepeatGroupContainer> RepeatGroupContainerPtr;
 
 __FIX42_END
 

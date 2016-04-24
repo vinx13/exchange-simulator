@@ -10,18 +10,19 @@
 
 __FIX42_BEGIN
 
+/* A repeating group is comprised with multiple field containers (repeating unit) */
 class RepeatGroup {
 public:
-    int count() const { return container_.count(); }
+    int count() const { return groups_.size(); }
 
-    FieldValueContainer &getGroups() { return container_; }
+    std::vector<FieldValueContainerPtr> &getGroups() { return groups_; }
 
-    const FieldValueContainer &getValueContainer() const { return container_; }
+    const std::vector<FieldValueContainerPtr> &getGroups() const { return groups_; }
 
     std::string toString() const;
 
 private:
-    FieldValueContainer container_;
+    std::vector<FieldValueContainerPtr> groups_;
 };
 
 __FIX42_END

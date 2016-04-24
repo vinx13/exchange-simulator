@@ -17,6 +17,15 @@ public:
 
     Message(std::string::iterator begin, std::string::iterator end);
 
+    const FieldValuePtr getField(Tag tag) const;
+    const FieldValuePtr getField(kFieldName name) const;
+    const RepeatGroupPtr getRepeatGroup(Tag tag) const;
+    const RepeatGroupPtr getRepeatGroup(kFieldName name) const;
+    FieldValuePtr getField(Tag tag);
+    FieldValuePtr getField(kFieldName name);
+    RepeatGroupPtr getRepeatGroup(Tag tag);
+    RepeatGroupPtr getRepeatGroup(kFieldName name);
+
 protected:
     MessageParser parser_;
 

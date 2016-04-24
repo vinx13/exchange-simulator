@@ -465,7 +465,7 @@ enum class kFieldName : Tag {
     kEncodedListStatusText = 446
 };
 
-enum class MessageType : char {
+enum class kMessageType : char {
     kHeartbeat = '0',
     kTestRequest = '1',
     kResendRequest = '2',

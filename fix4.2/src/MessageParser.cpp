@@ -1,31 +1,42 @@
 #include "MessageParser.h"
 
+
 __FIX42_BEGIN
 
 Tag MessageParser::goNextTag() {
-    auto eq = std::find(begin_, end_, '=');
+    auto eq = std::find(current_, end_, '=');
     if (eq == end_) {
         throw BadTag();
     }
-    Tag tag = std::stoi(std::string(begin_, eq));
-    begin_ = eq;
+    Tag tag = std::stoi(std::string(current_, eq));
+    current_ = eq;
     return tag;
+}
+
+void MessageParser::goLastStart() {
+    while ((*current_) != DELIMITER) {
+        if (current_ == begin_) {
+            return;
+        }
+        --current_;
+    }
+    ++current_;
 }
 
 FieldValuePtr MessageParser::goNextFieldValue(kFieldType type, size_t len) {
     //Data field must specify len
     if (len != -1) {
-        return FieldValue::fromString(type, begin_, begin_ + len);
+        return FieldValue::fromString(type, current_, current_ + len);
     }
-    auto soh = std::find(begin_, end_, '\001');
+    auto soh = std::find(current_, end_, DELIMITER);
     if (soh == end_) {
         throw BadFieldValue();
     }
-    return FieldValue::fromString(type, begin_, end_);
+    return FieldValue::fromString(type, current_, end_);
 }
 
 bool MessageParser::isDone() const {
-    return begin_ == end_;
+    return current_ == end_;
 }
 
 __FIX42_END

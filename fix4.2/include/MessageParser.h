@@ -17,10 +17,13 @@ public:
 
     FieldValuePtr goNextFieldValue(kFieldType type, size_t len = -1);
 
+    void goLastStart();
+
     bool isDone() const;
 
 private:
-    std::string::iterator begin_, end_;
+    const std::string::iterator begin_;
+    std::string::iterator current_, end_;
 };
 
 __FIX42_END
