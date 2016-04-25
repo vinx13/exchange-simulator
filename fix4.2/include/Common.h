@@ -28,6 +28,8 @@ typedef int Tag;
 const char DELIMITER = '\001';
 
 enum class kFieldType {
+    kUnknown, /* an exception should be raised when this type is found */
+
     kChar,
     kBoolean = kChar,
 
