@@ -29,4 +29,5 @@
 
 *.log
 .Po
+build/
 .DS_Store
