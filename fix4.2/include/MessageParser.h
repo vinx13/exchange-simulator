@@ -11,7 +11,8 @@ __FIX42_BEGIN
 
 class MessageParser {
 public:
-    MessageParser(std::string::iterator begin, std::string::iterator end) : begin_(begin), end_(end) { }
+    MessageParser(std::string::const_iterator begin, std::string::const_iterator end) :
+            begin_(begin), current_(begin), end_(end) { }
 
     Tag goNextTag();
 
@@ -22,8 +23,8 @@ public:
     bool isDone() const;
 
 private:
-    const std::string::iterator begin_;
-    std::string::iterator current_, end_;
+    const std::string::const_iterator begin_, end_;
+    std::string::const_iterator current_;
 };
 
 __FIX42_END

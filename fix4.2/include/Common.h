@@ -468,6 +468,7 @@ enum class kFieldName : Tag {
 };
 
 enum class kMessageType : char {
+    //MsgType is a string with a single character, so define kMessageType as enum of char
     kHeartbeat = '0',
     kTestRequest = '1',
     kResendRequest = '2',

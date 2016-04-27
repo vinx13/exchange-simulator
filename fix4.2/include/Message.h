@@ -24,9 +24,11 @@ public:
     using __FieldValueConstPtrType = typename std::add_const<__FieldValuePtrType<name> >::type;
 
 
-    explicit Message(std::string s);
+    Message();
 
-    Message(std::string::iterator begin, std::string::iterator end);
+    explicit Message(const std::string &s);
+
+    Message(std::string::const_iterator begin, std::string::const_iterator end);
 
     RepeatGroupPtr getRepeatGroup(kFieldName name) { return repeat_groups_.get(static_cast<Tag>(name)); }
 
@@ -48,10 +50,21 @@ public:
         );
     }
 
-protected:
-    MessageParser parser_;
+    kMessageType getType() const;
 
-    void parse();
+    void setType(kMessageType type);
+
+    void updateBodyLength();
+
+protected:
+
+    void parse(std::string::const_iterator begin, std::string::const_iterator end);
+
+    void parseRepeatGroup(MessageParser &parser, const Tag tag);
+
+    void parseDataField(MessageParser &parser, const Tag tag);
+
+    void parseGeneralField(MessageParser &parser, const Tag tag);
 
     FieldValueContainer field_values_;
     RepeatGroupContainer repeat_groups_;

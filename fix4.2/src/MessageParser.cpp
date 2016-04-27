@@ -9,7 +9,7 @@ Tag MessageParser::goNextTag() {
         throw BadTag();
     }
     Tag tag = std::stoi(std::string(current_, eq));
-    current_ = eq;
+    current_ = ++eq;
     return tag;
 }
 
@@ -32,7 +32,9 @@ FieldValuePtr MessageParser::goNextFieldValue(kFieldType type, size_t len) {
     if (soh == end_) {
         throw BadFieldValue();
     }
-    return FieldValue::fromString(type, current_, end_);
+    auto start = current_;
+    current_ = soh;
+    return FieldValue::fromString(type, start, current_++);
 }
 
 bool MessageParser::isDone() const {

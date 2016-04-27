@@ -1,5 +1,5 @@
 #include "gtest/gtest.h"
-#include "fix4.2/Fix42.h"
+#include "Fix42.h"
 #include "util.h"
 
 TEST(TestFieldValue, CharFieldValue) {
