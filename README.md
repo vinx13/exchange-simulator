@@ -1,4 +1,4 @@
-# ExchangeSimulator
+# Exchange Simulator
 
 ##Dependency
 - libevent 2.0.22
