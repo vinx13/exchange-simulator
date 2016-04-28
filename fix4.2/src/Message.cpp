@@ -23,9 +23,9 @@ void Message::parse(std::string::const_iterator begin, std::string::const_iterat
 
     while (!parser.isDone()) {
         tag = parser.goNextTag();
+
         if (kFieldType::kRepeatGroup == FieldTypeMap::get(tag)) {
             parseRepeatGroup(parser, tag);
-
         } else if (kFieldType::kLength == FieldTypeMap::get(tag)) {
             parseDataField(parser, tag);
         } else {
@@ -65,8 +65,36 @@ void Message::parseDataField(MessageParser &parser, const Tag tag) {
 }
 
 void Message::parseGeneralField(MessageParser &parser, const Tag tag) {
+
     auto field_value = parser.goNextFieldValue(FieldTypeMap::get(tag));
+
+    //filter special fields
+    if (static_cast<Tag>(kFieldName::kBeginString) == tag) {
+        setBeginString(
+                std::static_pointer_cast<
+                        typename FieldValueType<
+                                FieldTypeMap::get(kFieldName::kMsgType)>::Type>(field_value)
+                        ->getValue()
+        );
+        return;
+    }
+    if (static_cast<Tag>(kFieldName::kBodyLength) == tag) {
+        setBodyLength(
+                std::static_pointer_cast<
+                        typename FieldValueType<
+                                FieldTypeMap::get(kFieldName::kBodyLength)>::Type>(field_value)
+                        ->getValue()
+        );
+        return;
+    }
     field_values_.set(tag, field_value);
+}
+
+bool Message::contains(kFieldName name){
+    if(kFieldType::kRepeatGroup == FieldTypeMap::get(name))
+        return repeat_groups_.contains(static_cast<Tag>(name));
+    else
+        return field_values_.contains(static_cast<Tag>(name));
 }
 
 kMessageType Message::getType() const {
@@ -83,6 +111,12 @@ void Message::setType(kMessageType type) {
     field_values_.set(static_cast<Tag>(kFieldName::kMsgType), value, true);
 }
 
-void Message::updateBodyLength() { }
+std::string Message::toString() const {
+    std::string result;
+    result += std::to_string(static_cast<Tag>(kFieldName::kBeginString)) + '=' + begin_string_ + DELIMITER;
+    result += std::to_string(static_cast<Tag>(kFieldName::kBodyLength)) + '=' + std::to_string(body_length_) + DELIMITER;
+    result += field_values_.toString() + repeat_groups_.toString();
+    return result;
+}
 
 __FIX42_END

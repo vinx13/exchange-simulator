@@ -30,18 +30,35 @@ public:
 
     Message(std::string::const_iterator begin, std::string::const_iterator end);
 
+    bool contains(kFieldName name);
+
     RepeatGroupPtr getRepeatGroup(kFieldName name) { return repeat_groups_.get(static_cast<Tag>(name)); }
 
     const RepeatGroupPtr getRepeatGroup(kFieldName name) const { return repeat_groups_.get(static_cast<Tag>(name)); }
+
+    kMessageType getType() const;
+
+    void setType(kMessageType type);
+
+    std::string getBeginString() const { return begin_string_; }
+
+    void setBeginString(const std::string &s) { begin_string_ = s; }
+
+    int getBodyLength() const { return body_length_; }
+
+    void setBodyLength(int body_length) { body_length_ = body_length; }
+
+    std::string toString() const;
+
 
     /*
     template<kFieldName name>
     __FieldValuePtrType<name> getField() {
         return std::static_pointer_cast<__FieldValueType<name>>(
-                field_values_.get(static_cast<Tag>(name))
+            field_values_.get(static_cast<Tag>(name))
         );
     }
-    */
+*/
 
     template<kFieldName name>
     __FieldValueConstPtrType<name> getField() const {
@@ -50,11 +67,6 @@ public:
         );
     }
 
-    kMessageType getType() const;
-
-    void setType(kMessageType type);
-
-    void updateBodyLength();
 
 protected:
 
@@ -68,6 +80,9 @@ protected:
 
     FieldValueContainer field_values_;
     RepeatGroupContainer repeat_groups_;
+
+    std::string begin_string_;
+    int body_length_ = 0;
 
 };
 

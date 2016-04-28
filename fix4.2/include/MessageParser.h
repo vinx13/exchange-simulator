@@ -12,7 +12,7 @@ __FIX42_BEGIN
 class MessageParser {
 public:
     MessageParser(std::string::const_iterator begin, std::string::const_iterator end) :
-            begin_(begin), current_(begin), end_(end) { }
+            begin_(begin), end_(end), current_(begin) { }
 
     Tag goNextTag();
 

@@ -91,19 +91,19 @@ private:
             kFieldType::kString,    /*    70  kFieldName::kAllocID    */
             kFieldType::kChar,    /*    71  kFieldName::kAllocTransType    */
             kFieldType::kString,    /*    72  kFieldName::kRefAllocID    */
-            kFieldType::kInt,    /*    73  kFieldName::kNoOrders    */
+            kFieldType::kRepeatGroup,    /*    73  kFieldName::kNoOrders    */
             kFieldType::kInt,    /*    74  kFieldName::kAvgPrxPrecision    */
             kFieldType::kLocalMktDate,    /*    75  kFieldName::kTradeDate    */
             kFieldType::kString,    /*    76  kFieldName::kExecBroker    */
             kFieldType::kChar,    /*    77  kFieldName::kOpenClose    */
-            kFieldType::kInt,    /*    78  kFieldName::kNoAllocs    */
+            kFieldType::kRepeatGroup,    /*    78  kFieldName::kNoAllocs    */
             kFieldType::kString,    /*    79  kFieldName::kAllocAccount    */
             kFieldType::kQty,    /*    80  kFieldName::kAllocShares    */
             kFieldType::kChar,    /*    81  kFieldName::kProcessCode    */
-            kFieldType::kInt,    /*    82  kFieldName::kNoRpts    */
+            kFieldType::kRepeatGroup,    /*    82  kFieldName::kNoRpts    */
             kFieldType::kInt,    /*    83  kFieldName::kRptSeq    */
             kFieldType::kQty,    /*    84  kFieldName::kCxlQty    */
-            kFieldType::kInt,    /*    85  kFieldName::kNoDlvyInst    */
+            kFieldType::kRepeatGroup,    /*    85  kFieldName::kNoDlvyInst    */
             kFieldType::kString,    /*    86  kFieldName::kDlvyInst    */
             kFieldType::kInt,    /*    87  kFieldName::kAllocStatus    */
             kFieldType::kInt,    /*    88  kFieldName::kAllocRejCode    */
@@ -142,7 +142,7 @@ private:
             kFieldType::kBoolean,    /*    121  kFieldName::kForexReq    */
             kFieldType::kUTCTimestamp,    /*    122  kFieldName::kOrigSendingTime    */
             kFieldType::kBoolean,    /*    123  kFieldName::kGapFillFlag    */
-            kFieldType::kInt,    /*    124  kFieldName::kNoExecs    */
+            kFieldType::kRepeatGroup,    /*    124  kFieldName::kNoExecs    */
             kFieldType::kChar,    /*    125  kFieldName::kCxlType    */
             kFieldType::kUTCTimestamp,    /*    126  kFieldName::kExpireTime    */
             kFieldType::kChar,    /*    127  kFieldName::kDKReason    */
@@ -154,7 +154,7 @@ private:
             kFieldType::kPrice,    /*    133  kFieldName::kOfferPx    */
             kFieldType::kQty,    /*    134  kFieldName::kBidSize    */
             kFieldType::kQty,    /*    135  kFieldName::kOfferSize    */
-            kFieldType::kInt,    /*    136  kFieldName::kNoMiscFees    */
+            kFieldType::kRepeatGroup,    /*    136  kFieldName::kNoMiscFees    */
             kFieldType::kAmt,    /*    137  kFieldName::kMiscFeeAmt    */
             kFieldType::kCurrency,    /*    138  kFieldName::kMiscFeeCurr    */
             kFieldType::kChar,    /*    139  kFieldName::kMiscFeeType    */
@@ -164,7 +164,7 @@ private:
             kFieldType::kString,    /*    143  kFieldName::kTargetLocationID    */
             kFieldType::kString,    /*    144  kFieldName::kOnBehalfOfLocationID    */
             kFieldType::kString,    /*    145  kFieldName::kDeliverToLocationID    */
-            kFieldType::kInt,    /*    146  kFieldName::kNoRelatedSym    */
+            kFieldType::kRepeatGroup,    /*    146  kFieldName::kNoRelatedSym    */
             kFieldType::kString,    /*    147  kFieldName::kSubject    */
             kFieldType::kString,    /*    148  kFieldName::kHeadline    */
             kFieldType::kString,    /*    149  kFieldName::kURLLink    */
@@ -217,7 +217,7 @@ private:
             kFieldType::kString,    /*    196  kFieldName::kAllocLinkID    */
             kFieldType::kInt,    /*    197  kFieldName::kAllocLinkType    */
             kFieldType::kString,    /*    198  kFieldName::kSecondaryOrderID    */
-            kFieldType::kInt,    /*    199  kFieldName::kNoIOIQualifiers    */
+            kFieldType::kRepeatGroup,    /*    199  kFieldName::kNoIOIQualifiers    */
             kFieldType::kMonthYear,    /*    200  kFieldName::kMaturityMonthYear    */
             kFieldType::kInt,    /*    201  kFieldName::kPutOrCall    */
             kFieldType::kPrice,    /*    202  kFieldName::kStrikePrice    */
@@ -233,7 +233,7 @@ private:
             kFieldType::kLength,    /*    212  kFieldName::kXmlDataLen    */
             kFieldType::kData,    /*    213  kFieldName::kXmlData    */
             kFieldType::kString,    /*    214  kFieldName::kSettlInstRefID    */
-            kFieldType::kInt,    /*    215  kFieldName::kNoRoutingIDs    */
+            kFieldType::kRepeatGroup,    /*    215  kFieldName::kNoRoutingIDs    */
             kFieldType::kInt,    /*    216  kFieldName::kRoutingType    */
             kFieldType::kString,    /*    217  kFieldName::kRoutingID    */
             kFieldType::kPriceOffset,    /*    218  kFieldName::kSpreadToBenchmark    */
@@ -285,8 +285,8 @@ private:
             kFieldType::kInt,    /*    264  kFieldName::kMarketDepth    */
             kFieldType::kInt,    /*    265  kFieldName::kMDUpdateType    */
             kFieldType::kBoolean,    /*    266  kFieldName::kAggregatedBook    */
-            kFieldType::kInt,    /*    267  kFieldName::kNoMDEntryTypes    */
-            kFieldType::kInt,    /*    268  kFieldName::kNoMDEntries    */
+            kFieldType::kRepeatGroup,    /*    267  kFieldName::kNoMDEntryTypes    */
+            kFieldType::kRepeatGroup,    /*    268  kFieldName::kNoMDEntries    */
             kFieldType::kChar,    /*    269  kFieldName::kMDEntryType    */
             kFieldType::kPrice,    /*    270  kFieldName::kMDEntryPx    */
             kFieldType::kQty,    /*    271  kFieldName::kMDEntrySize    */
@@ -313,8 +313,8 @@ private:
             kFieldType::kChar,    /*    292  kFieldName::kCorporateAction    */
             kFieldType::kQty,    /*    293  kFieldName::kDefBidSize    */
             kFieldType::kQty,    /*    294  kFieldName::kDefOfferSize    */
-            kFieldType::kInt,    /*    295  kFieldName::kNoQuoteEntries    */
-            kFieldType::kInt,    /*    296  kFieldName::kNoQuoteSets    */
+            kFieldType::kRepeatGroup,    /*    295  kFieldName::kNoQuoteEntries    */
+            kFieldType::kRepeatGroup,    /*    296  kFieldName::kNoQuoteSets    */
             kFieldType::kInt,    /*    297  kFieldName::kQuoteAckStatus    */
             kFieldType::kInt,    /*    298  kFieldName::kQuoteCancelType    */
             kFieldType::kString,    /*    299  kFieldName::kQuoteEntryID    */
@@ -400,11 +400,11 @@ private:
             kFieldType::kString,    /*    379  kFieldName::kBusinessRejectRefID    */
             kFieldType::kInt,    /*    380  kFieldName::kBusinessRejectReason    */
             kFieldType::kAmt,    /*    381  kFieldName::kGrossTradeAmt    */
-            kFieldType::kInt,    /*    382  kFieldName::kNoContraBrokers    */
+            kFieldType::kRepeatGroup,    /*    382  kFieldName::kNoContraBrokers    */
             kFieldType::kInt,    /*    383  kFieldName::kMaxMessageSize    */
-            kFieldType::kInt,    /*    384  kFieldName::kNoMsgTypes    */
+            kFieldType::kRepeatGroup,    /*    384  kFieldName::kNoMsgTypes    */
             kFieldType::kChar,    /*    385  kFieldName::kMsgDirection    */
-            kFieldType::kInt,    /*    386  kFieldName::kNoTradingSessions    */
+            kFieldType::kRepeatGroup,    /*    386  kFieldName::kNoTradingSessions    */
             kFieldType::kQty,    /*    387  kFieldName::kTotalVolumeTraded    */
             kFieldType::kChar,    /*    388  kFieldName::kDiscretionInst    */
             kFieldType::kPriceOffset,    /*    389  kFieldName::kDiscretionOffset    */
@@ -416,7 +416,7 @@ private:
             kFieldType::kInt,    /*    395  kFieldName::kNumTickets    */
             kFieldType::kAmt,    /*    396  kFieldName::kSideValue1    */
             kFieldType::kAmt,    /*    397  kFieldName::kSideValue2    */
-            kFieldType::kInt,    /*    398  kFieldName::kNoBidDescriptors    */
+            kFieldType::kRepeatGroup,    /*    398  kFieldName::kNoBidDescriptors    */
             kFieldType::kInt,    /*    399  kFieldName::kBidDescriptorType    */
             kFieldType::kString,    /*    400  kFieldName::kBidDescriptor    */
             kFieldType::kInt,    /*    401  kFieldName::kSideValueInd    */
@@ -438,7 +438,7 @@ private:
             kFieldType::kInt,    /*    417  kFieldName::kNumBidders    */
             kFieldType::kChar,    /*    418  kFieldName::kTradeType    */
             kFieldType::kChar,    /*    419  kFieldName::kBasisPxType    */
-            kFieldType::kInt,    /*    420  kFieldName::kNoBidComponents    */
+            kFieldType::kRepeatGroup,    /*    420  kFieldName::kNoBidComponents    */
             kFieldType::kString,    /*    421  kFieldName::kCountry    */
             kFieldType::kInt,    /*    422  kFieldName::kTotNoStrikes    */
             kFieldType::kInt,    /*    423  kFieldName::kPriceType    */
@@ -446,7 +446,7 @@ private:
             kFieldType::kQty,    /*    425  kFieldName::kDayCumQty    */
             kFieldType::kPrice,    /*    426  kFieldName::kDayAvgPx    */
             kFieldType::kInt,    /*    427  kFieldName::kGTBookingInst    */
-            kFieldType::kInt,    /*    428  kFieldName::kNoStrikes    */
+            kFieldType::kRepeatGroup,    /*    428  kFieldName::kNoStrikes    */
             kFieldType::kInt,    /*    429  kFieldName::kListStatusType    */
             kFieldType::kInt,    /*    430  kFieldName::kNetGrossInd    */
             kFieldType::kInt,    /*    431  kFieldName::kListOrderStatus    */
