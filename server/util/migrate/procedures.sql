@@ -29,7 +29,7 @@ BEGIN
         `price` in (
             SELECT `price` FROM `OrderBook` GROUP BY `price` HAVING
                 COUNT(DISTINCT(`side`)) > 1
-        ) ORDER BY `price`, `time`
+        ) ORDER BY `price`, `time` DESC;
 END//
 
 CREATE PROCEDURE orderbook_update(IN id TEXT, IN quantity INT)
