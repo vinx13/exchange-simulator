@@ -2,6 +2,8 @@
 #define EXCHANGESIMULATOR_SERVER_CONNECTIONFACTORY_H
 
 
+#include "Config.h"
+
 #include <memory>
 #include <cppconn/connection.h>
 #include <mysql_driver.h>
@@ -12,17 +14,17 @@ public:
 
     static std::shared_ptr<ConnectionFactory> getInstance();
 
-    static void init(const std::string &server, const std::string &user, const std::string &password);
+    static void init(const DbConfig &config);
 
-    ConnectionPtr getConnnection();
-
-    ConnectionFactory(const std::string &server, const std::string &user, const std::string &password);
+    ConnectionPtr createConnnection();
 
 private:
     static std::shared_ptr<ConnectionFactory> instance__;
     std::mutex mutex_;
-    const std::string server_, user_, password_;
+    const DbConfig config_;
     sql::mysql::MySQL_Driver *driver_;
+
+    ConnectionFactory(const DbConfig &config);
 };
 
 

@@ -1,20 +1,25 @@
 #include "ConnectionFactory.h"
 
+std::shared_ptr<ConnectionFactory> ConnectionFactory::instance__;
+
 std::shared_ptr<ConnectionFactory> ConnectionFactory::getInstance() {
     return instance__;
 }
 
-void ConnectionFactory::init(const std::string &server, const std::string &user, const std::string &password) {
-    instance__ = std::make_shared<ConnectionFactory>(server, user, password);
+void ConnectionFactory::init(const DbConfig &config) {
+    instance__ = std::shared_ptr<ConnectionFactory>(new ConnectionFactory(config));
 }
 
-ConnectionFactory::ConnectionFactory(const std::string &server, const std::string &user, const std::string &password) :
-        server_(server), user_(user), password_(password) {
+ConnectionFactory::ConnectionFactory(const DbConfig &config):config_(config){
     driver_ = sql::mysql::get_mysql_driver_instance();
 }
 
-ConnectionPtr ConnectionFactory::getConnnection() {
-    std::lock_guard lock(mutex_);
-    return std::shared_ptr(driver_->connect(server_,user_,password_));
+ConnectionFactory::ConnectionPtr ConnectionFactory::createConnnection() {
+    std::lock_guard<std::mutex> lock(mutex_);
+
+    auto conn = std::shared_ptr<sql::Connection>(driver_->connect(config_.host, config_.user, config_.password));
+    conn->setSchema(config_.database);
+    conn->setAutoCommit(true);
+    return conn;
 }
 
