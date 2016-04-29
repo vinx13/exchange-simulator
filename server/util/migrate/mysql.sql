@@ -10,8 +10,7 @@ CREATE TABLE `ExchangeSimulator`.`OrderBook` (
     `price` INT NOT NULL ,
     `quantity` INT NOT NULL ,
     `time` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    PRIMARY KEY (`symbol`(8)),
-    KEY (`id`)
+    PRIMARY KEY (`id`)
     ) ENGINE = InnoDB;
 
 CREATE TABLE `ExchangeSimulator`.`SecurityStatus` (
