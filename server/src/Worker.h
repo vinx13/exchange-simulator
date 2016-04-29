@@ -2,6 +2,9 @@
 #define EXCHANGESIMULATOR_SERVER_WORKER_H
 
 
+#include "MessageProcessor.h"
+#include "ConnectionFactory.h"
+
 #include <vector>
 #include <queue>
 #include <memory>
@@ -46,6 +49,8 @@ private:
     evutil_socket_t notify_conn_fd_;
     event_base *event_base_;
     std::vector<BufferContext *> buffer_contexts_;
+    ConnectionFactory::ConnectionPtr dbconn_;
+    MessageProcessor processor_;
 };
 
 

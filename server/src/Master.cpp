@@ -4,6 +4,8 @@
 #include <cstring>
 
 Master::Master(const Config *config) : config_(*config) {
+    ConnectionFactory::init(config->db_config);
+
     event_base_ = event_base_new();
 
     for (int i = 0; i < config_.num_workers; i++) {

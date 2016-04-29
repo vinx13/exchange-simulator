@@ -1,4 +1,5 @@
 #include "Worker.h"
+#include "Fix42.h"
 #include <string>
 
 static const std::string EXPECT_HEADER = "8=FIX.4.2\0019=";
@@ -38,7 +39,6 @@ void Worker::readBuffer(bufferevent *bev, void *arg) {
     int len = bufferevent_read(bev, buf, BUF_SIZE);
     context->worker->processInput(buf, len, context);
 }
-
 
 
 /***
@@ -113,7 +113,10 @@ void Worker::registerConnection(evutil_socket_t fd, short what, void *arg) {
     }
 }
 
-Worker::Worker(evutil_socket_t notify_conn_fd) : notify_conn_fd_(notify_conn_fd) {
+Worker::Worker(evutil_socket_t notify_conn_fd) :
+        notify_conn_fd_(notify_conn_fd),
+        dbconn_( ConnectionFactory::getInstance()->createConnnection()),
+        processor_(dbconn_) {
     event_base_ = event_base_new();
     event *new_conn_event = event_new(event_base_, notify_conn_fd_, EV_READ | EV_PERSIST, registerConnection, this);
     event_add(new_conn_event, NULL);
@@ -163,7 +166,13 @@ void Worker::processInput(const char *buf, const int len, BufferContext *context
         } else {
             context->data.push_back(buf[processed++]);
             if (--context->body_remained_len == 0) {
-                //TODO: Process message
+                std::string s(context->data.begin(), context->data.end());
+                std::shared_ptr<Fix42::Message> result = processor_.accept(
+                        std::make_shared<Fix42::Message>(s)
+                );
+                if (result) {
+                    //TODO: send back result
+                }
                 context->reset();
             }
         }
