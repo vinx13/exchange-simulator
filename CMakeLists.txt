@@ -1,14 +1,17 @@
 cmake_minimum_required(VERSION 3.3)
 project(ExchangeSimulator)
 
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -Wall -g")
 
 set(SERVER_SOURCE_FILES
         server/src/main.cpp
         server/src/Master.cpp
         server/src/Worker.cpp
-        server/src/MessageProcessor.cpp
+        server/src/MessageHandler.cpp
         server/src/ConnectionFactory.cpp
+        server/src/OrderBook.cpp
+        server/src/Config.cpp
+        server/src/APIUtil.cpp
         )
 
 set(FIX42_SOURCE_FILES
