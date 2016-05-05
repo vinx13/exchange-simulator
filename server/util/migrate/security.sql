@@ -1,7 +1,18 @@
-CREATE PROCEDURE security_lock
-(IN symbol TEXT)
+CREATE PROCEDURE security_try_lock
+(IN symbol TEXT, out result BOOLEAN)
 BEGIN
-    UPDATE `Security` SET `lock` = TRUE WHERE `symbol` = symbol;
+    DECLARE locked BOOLEAN;
+    SET result = FALSE;
+    SELECT `lock` INTO @locked FROM `Security` WHERE `symbol` = symbol LIMIT 1;
+    IF locked is FALSE THEN
+        START TRANSACTION;
+            SELECT `lock` INTO @locked FROM `Security` WHERE `symbol` = symbol LIMIT 1;
+            IF locked is FALSE THEN
+                UPDATE `Security` SET `lock` = TRUE WHERE `symbol` = symbol;
+                SET result = TRUE;
+            END IF;
+        COMMIT;
+    END IF;
 END//
 
 
