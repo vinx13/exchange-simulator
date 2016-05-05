@@ -1,7 +1,6 @@
 #include "OrderBook.h"
-#include <cstdlib>
-
-#define BUFFER_SIZE 1024
+#include "APIUtil.h"
+#include "TradeRecord.h"
 
 OrderBook::~OrderBook() {
     if (has_lock_) {
@@ -10,31 +9,98 @@ OrderBook::~OrderBook() {
 }
 
 void OrderBook::put(const Quote &quote) {
-    /*
-     * orderbook_put(
-     *  IN symbol TEXT, IN client TEXT, IN client_order_id TEXT, IN side CHAR(1), IN price INT, IN quantity INT
-     *  )
-     */
-    char buf[BUFFER_SIZE];
-    sprintf(buf, "CALL orderbook_put('%s','%s','%s','%c',%d,%d)",
-            quote.symbol.c_str(), quote.client.c_str(),
-            quote.client_order_id.c_str(),
-            static_cast<char>(quote.side),
-            quote.price, quote.quantity);
-    stmt_->execute(buf);
-}
-
-Fix42::MessagePtr OrderBook::execute() {
-    return std::shared_ptr<Fix42::Message>();
+    APIUtil::orderbookPut(stmt_, quote);
 }
 
 void OrderBook::lock() {
-    const std::string query = "CALL security_lock('" + symbol_ + "')";
-    stmt_->execute(query);
+    bool locked = false;
+    do {
+        APIUtil::securityTryLock(stmt_, symbol_, locked);
+        locked = true; //FIXME: currently locked will not be set by API
+    } while (!locked);
+    has_lock_ = true;
 }
 
 void OrderBook::unlock() {
-    const std::string query = "CALL security_unlock('" + symbol_ + "')";
-    stmt_->execute(query);
+    APIUtil::securityUnlock(stmt_, symbol_);
+    has_lock_ = false;
 }
 
+std::vector<TradeRecord> OrderBook::execute() {
+    bool is_running = false;
+    APIUtil::systemStatusIsRunning(stmt_, is_running);
+    if (is_running) {
+        return std::vector<TradeRecord>();
+    }
+
+    lock(); //TODO check whether locked
+    std::queue<Quote> buy_quotes, sell_quotes;
+    std::vector<TradeRecord> records;
+    match(buy_quotes, sell_quotes);
+
+    //buy/sell_quotes are sorted by price and time descending order
+    while (!buy_quotes.empty() && !sell_quotes.empty()) {
+        if (buy_quotes.front().price == sell_quotes.front().price) {
+
+            auto &buy = buy_quotes.front();
+            auto &sell = sell_quotes.front();
+            TradeRecord record;
+
+            int qty = std::min(buy.quantity, sell.quantity);
+            buy.quantity -= qty;
+            sell.quantity -= qty;
+
+            //TODO what if failed
+            updateQuote(buy);
+            updateQuote(sell);
+
+            record.price = buy.price;
+            record.quantity = qty;
+            record.order_buy = buy.id;
+            record.order_sell = sell.id;
+            records.push_back(record);
+
+            if (buy.quantity == 0) {
+                buy_quotes.pop();
+            }
+            if (sell.quantity == 0) {
+                sell_quotes.pop();
+            }
+
+        } else if (buy_quotes.front().price < sell_quotes.front().price) {
+            sell_quotes.pop();
+        } else { /* buy_quotes.front().price > sell_quotes.front().price */
+            buy_quotes.pop();
+        }
+
+    }
+    unlock();
+
+    for (auto &record:records) {
+        APIUtil::tradeRecordPut(stmt_, record);
+    }
+    return records;
+}
+
+void OrderBook::match(std::queue<Quote> &buy, std::queue<Quote> &sell) {
+    APIUtil::orderbookQueryMatch(stmt_, symbol_);
+
+    std::shared_ptr<sql::ResultSet> res(stmt_->getResultSet());
+    while (res->next()) {
+        Quote quote(res);
+        if (quote.side == kTradeSide::kBuy) {
+            buy.push(quote);
+        } else if (quote.side == kTradeSide::kSell) {
+            sell.push(quote);
+        }
+    }
+    stmt_->getMoreResults(); //free last result set
+}
+
+void OrderBook::updateQuote(const Quote &quote) {
+    if (quote.quantity == 0) {
+        APIUtil::orderbookDelete(stmt_, quote.id);
+    } else {
+        APIUtil::orderbookUpdate(stmt_, quote.id, quote.quantity);
+    }
+}

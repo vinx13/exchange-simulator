@@ -3,12 +3,13 @@
 
 
 #include "Quote.h"
+#include "Fix42.h"
+#include "TradeRecord.h"
 
 #include <vector>
 #include <string>
-#include <include/Common.h>
+#include <queue>
 #include <cppconn/statement.h>
-
 
 class OrderBook {
 public:
@@ -23,7 +24,7 @@ public:
 
     std::vector<Quote> &get() { return quotes_; }
 
-    Fix42::MessagePtr execute();
+    std::vector<TradeRecord> execute();
 
 private:
     std::string symbol_;
@@ -34,6 +35,11 @@ private:
     void lock();
 
     void unlock();
+
+    void match(std::queue<Quote> &buy, std::queue<Quote> &sell);
+
+    void updateQuote(const Quote &quote);
+
 
 };
 

@@ -3,8 +3,10 @@
 
 
 #include "Fix42.h"
+#include "TradeRecord.h"
 #include "ConnectionFactory.h"
 
+#include <vector>
 #include <memory>
 
 class MessageHandler {
@@ -14,7 +16,7 @@ public:
     Fix42::MessagePtr accept(const Fix42::MessagePtr message);
 
 protected:
-    Fix42::MessagePtr handleSingleOrder(const Fix42::MessagePtr message);
+    std::vector<TradeRecord> handleSingleOrder(const Fix42::MessagePtr message);
 
     ConnectionFactory::ConnectionPtr dbconn_;
 };
