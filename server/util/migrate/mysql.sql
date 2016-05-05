@@ -28,7 +28,7 @@ CREATE TABLE `ExchangeSimulator`.`TradeRecord` (
     `order_sell` INT NOT NULL ,
     `price` INT NOT NULL ,
     `quantity` INT NOT NULL ,
-    `time` TIMESTAMP NOT NULL ,
+    `time` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ,
     PRIMARY KEY (`id`)
     ) ENGINE = InnoDB;
 
