@@ -3,9 +3,10 @@
 
 
 #include "Fix42.h"
+#include <cppconn/resultset.h>
 
-enum class kTradeSide :char{
-    kBuy, kSell
+enum class kTradeSide : char {
+    kBuy = 'b', kSell = 's'
 };
 
 struct Quote {
@@ -22,6 +23,16 @@ struct Quote {
         quantity = message->getField<Fix42::kFieldName::kOrderQty>()->getValue();
         //stores it as an integer to avoid precision loss with floating number
         price = message->getField<Fix42::kFieldName::kPrice>()->getValue() * 100;
+    }
+
+    Quote(std::shared_ptr<sql::ResultSet> res) {
+        id = res->getInt("id");
+        symbol = res->getString("symbol");
+        client = res->getString("client");
+        client_order_id = res->getString("client_order_id");
+        price = res->getInt("price");
+        quantity = res->getInt("quantity");
+        side = static_cast<kTradeSide>(res->getString("side")[0]);
     }
 
 };
