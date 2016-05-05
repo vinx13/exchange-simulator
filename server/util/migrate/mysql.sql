@@ -13,7 +13,7 @@ CREATE TABLE `ExchangeSimulator`.`OrderBook` (
     PRIMARY KEY (`id`)
     ) ENGINE = InnoDB;
 
-CREATE TABLE `ExchangeSimulator`.`SecurityStatus` (
+CREATE TABLE `ExchangeSimulator`.`Security` (
     `symbol` TEXT NOT NULL ,
     `price` INT NOT NULL ,
     `prev_close` INT NOT NULL ,
@@ -22,5 +22,27 @@ CREATE TABLE `ExchangeSimulator`.`SecurityStatus` (
     PRIMARY KEY (`symbol`(8))
     ) ENGINE = InnoDB;
 
+CREATE TABLE `ExchangeSimulator`.`TradeRecord` (
+    `id` INT NOT NULL AUTO_INCREMENT,
+    `order_buy` INT NOT NULL ,
+    `order_sell` INT NOT NULL ,
+    `price` INT NOT NULL ,
+    `quantity` INT NOT NULL ,
+    `time` TIMESTAMP NOT NULL ,
+    PRIMARY KEY (`id`)
+    ) ENGINE = InnoDB;
+
+
+CREATE TABLE `ExchangeSimulator`.`OrderArchive` (
+    `id` INT NOT NULL ,
+    `symbol` TEXT NOT NULL ,
+    `client` TEXT NOT NULL ,
+    `client_order_id` TEXT NOT NULL,
+    `side` CHAR(1) NOT NULL ,
+    `price` INT NOT NULL ,
+    `quantity` INT NOT NULL ,
+    `time` TIMESTAMP NOT NULL ,
+    PRIMARY KEY (`id`)
+    ) ENGINE = InnoDB;
 
 SOURCE procedures.sql
