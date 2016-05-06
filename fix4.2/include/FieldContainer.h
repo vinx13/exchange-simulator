@@ -39,7 +39,7 @@ public:
     std::string toString() const noexcept {
         std::string result;
         for (auto field: fields_) {
-            result += std::to_string(field.first) + '=' + field.second->toString() + DELIMITER;
+            result += std::to_string(field.first) + '=' + field.second->toString();
         }
         return result;
     }

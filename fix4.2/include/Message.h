@@ -44,7 +44,7 @@ public:
 
     void setBeginString(const std::string &s) { begin_string_ = s; }
 
-    int getBodyLength() const { return body_length_; }
+    int getBodyLength() const;
 
     void setBodyLength(int body_length) { body_length_ = body_length; }
 
@@ -67,6 +67,14 @@ public:
         );
     }
 
+    template<kFieldName name, class ...Arg>
+    void setField(Arg ...arg) {
+        field_values_.set(
+                static_cast<Tag>(name),
+                std::make_shared<__FieldValueType<name>>
+                        (std::forward<Arg>(arg)...));
+    }
+
 
 protected:
 
@@ -82,7 +90,7 @@ protected:
     RepeatGroupContainer repeat_groups_;
 
     std::string begin_string_;
-    int body_length_ = 0;
+    mutable int body_length_ = 0; //will be lazy set
 
 };
 

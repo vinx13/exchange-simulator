@@ -1,6 +1,7 @@
 #include "Message.h"
 #include "FieldTypeMap.h"
 #include <algorithm>
+#include <sstream>
 
 __FIX42_BEGIN
 
@@ -90,8 +91,8 @@ void Message::parseGeneralField(MessageParser &parser, const Tag tag) {
     field_values_.set(tag, field_value);
 }
 
-bool Message::contains(kFieldName name){
-    if(kFieldType::kRepeatGroup == FieldTypeMap::get(name))
+bool Message::contains(kFieldName name) {
+    if (kFieldType::kRepeatGroup == FieldTypeMap::get(name))
         return repeat_groups_.contains(static_cast<Tag>(name));
     else
         return field_values_.contains(static_cast<Tag>(name));
@@ -111,12 +112,25 @@ void Message::setType(kMessageType type) {
     field_values_.set(static_cast<Tag>(kFieldName::kMsgType), value, true);
 }
 
+int Message::getBodyLength() const {
+    if (body_length_) {
+        return body_length_;
+    }
+    std::string s = field_values_.toString() + repeat_groups_.toString();
+    body_length_ = s.length();
+    return body_length_;
+}
+
 std::string Message::toString() const {
-    std::string result;
-    result += std::to_string(static_cast<Tag>(kFieldName::kBeginString)) + '=' + begin_string_ + DELIMITER;
-    result += std::to_string(static_cast<Tag>(kFieldName::kBodyLength)) + '=' + std::to_string(body_length_) + DELIMITER;
-    result += field_values_.toString() + repeat_groups_.toString();
-    return result;
+    std::string result = field_values_.toString() + repeat_groups_.toString();
+    body_length_ = result.length();
+    std::ostringstream s;
+    s << std::to_string(static_cast<Tag>(kFieldName::kBeginString))
+    << '=' << begin_string_ << DELIMITER
+    << std::to_string(static_cast<Tag>(kFieldName::kBodyLength))
+    << '=' + std::to_string(body_length_) + DELIMITER;
+    s << result;
+    return s.str();
 }
 
 __FIX42_END
