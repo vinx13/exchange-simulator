@@ -5,6 +5,7 @@
 #include "Quote.h"
 #include "Fix42.h"
 #include "TradeRecord.h"
+#include "SecurityStatus.h"
 
 #include <vector>
 #include <string>
@@ -13,8 +14,10 @@
 
 class OrderBook {
 public:
+    static const double MAX_PRICE_DELTA;
+    static const double MAX_ORDER_VOLUMN;
 
-    OrderBook(std::string symbol, std::shared_ptr<sql::Statement> stmt) : symbol_(symbol), stmt_(stmt) { }
+    OrderBook(std::string symbol, std::shared_ptr<sql::Statement> stmt);
 
     ~OrderBook();
 
@@ -29,6 +32,7 @@ public:
 private:
     std::string symbol_;
     std::vector<Quote> quotes_;
+    SecurityStatus security_status_;
     std::shared_ptr<sql::Statement> stmt_;
     bool has_lock_ = false;
 
@@ -40,6 +44,9 @@ private:
 
     void updateQuote(const Quote &quote);
 
+    void updatePrice();
+
+    bool isValid(const Quote &quote) const;
 
 };
 

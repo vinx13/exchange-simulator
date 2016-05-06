@@ -1,6 +1,12 @@
 #include "OrderBook.h"
 #include "APIUtil.h"
-#include "TradeRecord.h"
+
+const double OrderBook::MAX_PRICE_DELTA = 0.1;
+const double OrderBook::MAX_ORDER_VOLUMN = 0.05;
+
+OrderBook::OrderBook(std::string symbol, std::shared_ptr<sql::Statement> stmt) : symbol_(symbol), stmt_(stmt) {
+    APIUtil::securityQuery(stmt_, symbol_);
+}
 
 OrderBook::~OrderBook() {
     if (has_lock_) {
@@ -52,6 +58,8 @@ std::vector<TradeRecord> OrderBook::execute() {
             //TODO what if failed
             updateQuote(buy);
             updateQuote(sell);
+            security_status_.price = buy.price;
+            updatePrice();
 
             record.price = buy.price;
             record.quantity = qty;
@@ -102,4 +110,20 @@ void OrderBook::updateQuote(const Quote &quote) {
     } else {
         APIUtil::orderbookUpdate(stmt_, quote.id, quote.quantity);
     }
+}
+
+void OrderBook::updatePrice() {
+    APIUtil::securityUpdatePrice(stmt_, security_status_);
+}
+
+bool OrderBook::isValid(const Quote &quote) const {
+    int prev = security_status_.prev_close;
+    int delta = prev * 0.1;
+    if(quote.price < prev-delta || quote.price > prev+delta){
+        return false;
+    }
+    if(quote.quantity * quote.price > security_status_.market_cap * 0.05){
+        return false;
+    }
+    return true;
 }

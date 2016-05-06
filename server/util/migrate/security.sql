@@ -34,3 +34,8 @@ CREATE PROCEDURE security_update_price(IN symbol TEXT, IN price INT)
 BEGIN
     UPDATE `Security` SET `price` = price WHERE `symbol` = symbol;
 END//
+
+CREATE PROCEDURE security_query(IN symbol TEXT)
+BEGIN
+    SELECT * from `Security` WHERE `symbol` = symbol;
+END//

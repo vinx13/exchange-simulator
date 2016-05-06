@@ -64,3 +64,16 @@ void APIUtil::tradeRecordPut(StmtPtr stmt, const TradeRecord &record) {
     stmt->execute(s.str());
 }
 
+void APIUtil::securityUpdatePrice(StmtPtr stmt, const SecurityStatus &security){
+    std::ostringstream s;
+    s << "CALL security_update_price('"
+    << security.symbol << "',"
+    << security.price << ")";
+    stmt->execute(s.str());
+}
+
+void APIUtil::securityQuery(StmtPtr stmt, const std::string &symbol) {
+    std::ostringstream s;
+    s << "CALL security_query('" << symbol << "')";
+    stmt->execute(s.str());
+}
