@@ -16,7 +16,6 @@ void OrderBook::lock() {
     bool locked = false;
     do {
         APIUtil::securityTryLock(stmt_, symbol_, locked);
-        locked = true; //FIXME: currently locked will not be set by API
     } while (!locked);
     has_lock_ = true;
 }
@@ -29,7 +28,7 @@ void OrderBook::unlock() {
 std::vector<TradeRecord> OrderBook::execute() {
     bool is_running = false;
     APIUtil::systemStatusIsRunning(stmt_, is_running);
-    if (is_running) {
+    if (!is_running) {
         return std::vector<TradeRecord>();
     }
 

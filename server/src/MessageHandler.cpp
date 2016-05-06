@@ -22,6 +22,7 @@ std::vector<TradeRecord> MessageHandler::handleSingleOrder(const Fix42::MessageP
     OrderBook order_book(message->getField<Fix42::kFieldName::kSymbol>()->getValue(),
                          std::shared_ptr<sql::Statement>(dbconn_->createStatement()));
     Quote quote(message);
+
     order_book.put(quote);
     return order_book.execute();
 }

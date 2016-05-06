@@ -9,7 +9,6 @@ void APIUtil::securityTryLock(APIUtil::StmtPtr stmt, const std::string &symbol, 
     std::shared_ptr<sql::ResultSet> results(stmt->executeQuery("SELECT @result AS _result"));
     results->next();
     result = results->getBoolean("_result");
-    results->next();
 }
 
 void APIUtil::securityUnlock(APIUtil::StmtPtr stmt, const std::string &symbol) {
@@ -53,7 +52,6 @@ void APIUtil::systemStatusIsRunning(StmtPtr stmt, bool &result) {
     std::shared_ptr<sql::ResultSet> results(stmt->executeQuery("SELECT @result AS _result"));
     results->next(); //only one result exists
     result = results->getBoolean("_result");
-    results->next(); //free old results
 }
 
 void APIUtil::tradeRecordPut(StmtPtr stmt, const TradeRecord &record) {
