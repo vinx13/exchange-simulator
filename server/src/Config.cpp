@@ -1,6 +1,7 @@
 #include "Config.h"
 #include <map>
 #include <sstream>
+#include <fstream>
 
 template<class T>
 static void readInto(const std::string &name, const std::map<std::string, std::string> &src, T &dest) {
@@ -10,7 +11,8 @@ static void readInto(const std::string &name, const std::map<std::string, std::s
     }
 }
 
-Config::Config(std::istream &in) {
+Config::Config(const std::string &filename) {
+    std::ifstream in(filename);
     std::string line;
     std::map<std::string, std::string> pairs;
     std::string k, v;

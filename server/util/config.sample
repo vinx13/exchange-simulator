@@ -1,0 +1,12 @@
+host 127.0.0.1
+port 33015
+max_clients 100
+num_workers 5
+
+db_user user
+db_password password
+db_database ExchangeSimulator
+db_host tcp://127.0.0.1:3306
+
+access_log access.log
+error_log error.log

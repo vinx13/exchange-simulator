@@ -23,7 +23,7 @@ struct Config {
 
     Config() = default;
 
-    Config(std::istream &in);
+    Config(const std::string &filename);
 };
 
 #endif //EXCHANGESIMULATOR_SERVER_CONFIG_H
