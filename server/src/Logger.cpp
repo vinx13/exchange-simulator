@@ -32,7 +32,7 @@ void Logger::print(const std::string &s, const kLoggerLevel level) {
 
 
 void Logger::addLogHead(std::ostream &dest, const Logger::kLoggerLevel level) const {
-    dest << getFormatedTime() << ' ' << levelToString(level) << ' ';
+    dest << getFormatedTime() << " [" << levelToString(level) << "] ";
 }
 
 std::string Logger::levelToString(const Logger::kLoggerLevel level) const {

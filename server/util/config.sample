@@ -2,6 +2,7 @@ host 127.0.0.1
 port 33015
 max_clients 100
 num_workers 5
+debug 1
 
 db_user user
 db_password password
