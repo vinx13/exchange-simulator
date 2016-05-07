@@ -6,18 +6,20 @@
 #include "Fix42.h"
 #include "TradeRecord.h"
 #include "SecurityStatus.h"
+#include "APIUtil.h"
 
 #include <vector>
 #include <string>
 #include <queue>
 #include <cppconn/statement.h>
+#include <cppconn/connection.h>
 
 class OrderBook {
 public:
     static const double MAX_PRICE_DELTA;
     static const double MAX_ORDER_VOLUMN;
 
-    OrderBook(std::string symbol, std::shared_ptr<sql::Statement> stmt);
+    OrderBook(std::string symbol, APIUtil::ConnPtr conn);
 
     ~OrderBook();
 
@@ -33,7 +35,9 @@ private:
     std::string symbol_;
     std::vector<Quote> quotes_;
     SecurityStatus security_status_;
-    std::shared_ptr<sql::Statement> stmt_;
+    APIUtil::ConnPtr conn_;
+    APIUtil api_;
+
     bool has_lock_ = false;
 
     void lock();

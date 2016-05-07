@@ -4,8 +4,8 @@
 const double OrderBook::MAX_PRICE_DELTA = 0.1;
 const double OrderBook::MAX_ORDER_VOLUMN = 0.05;
 
-OrderBook::OrderBook(std::string symbol, std::shared_ptr<sql::Statement> stmt) : symbol_(symbol), stmt_(stmt) {
-    APIUtil::securityQuery(stmt_, symbol_);
+OrderBook::OrderBook(std::string symbol, APIUtil::ConnPtr conn) : symbol_(symbol), conn_(conn), api_(conn) {
+    api_.securityQuery(symbol_, security_status_);
 }
 
 OrderBook::~OrderBook() {
@@ -15,25 +15,25 @@ OrderBook::~OrderBook() {
 }
 
 void OrderBook::put(const Quote &quote) {
-    APIUtil::orderbookPut(stmt_, quote);
+    api_.orderbookPut(quote);
 }
 
 void OrderBook::lock() {
     bool locked = false;
     do {
-        APIUtil::securityTryLock(stmt_, symbol_, locked);
+        api_.securityTryLock(symbol_, locked);
     } while (!locked);
     has_lock_ = true;
 }
 
 void OrderBook::unlock() {
-    APIUtil::securityUnlock(stmt_, symbol_);
+    api_.securityUnlock(symbol_);
     has_lock_ = false;
 }
 
 std::vector<TradeRecord> OrderBook::execute() {
     bool is_running = false;
-    APIUtil::systemStatusIsRunning(stmt_, is_running);
+    api_.systemStatusIsRunning(is_running);
     if (!is_running) {
         return std::vector<TradeRecord>();
     }
@@ -84,45 +84,44 @@ std::vector<TradeRecord> OrderBook::execute() {
     unlock();
 
     for (auto &record:records) {
-        APIUtil::tradeRecordPut(stmt_, record);
+        api_.tradeRecordPut(record);
     }
     return records;
 }
 
 void OrderBook::match(std::queue<Quote> &buy, std::queue<Quote> &sell) {
-    APIUtil::orderbookQueryMatch(stmt_, symbol_);
+    APIUtil::ResultSetPtr results;
+    api_.orderbookQueryMatch(symbol_, results);
 
-    std::shared_ptr<sql::ResultSet> res(stmt_->getResultSet());
-    while (res->next()) {
-        Quote quote(res);
+    while (results->next()) {
+        Quote quote(results);
         if (quote.side == kTradeSide::kBuy) {
             buy.push(quote);
         } else if (quote.side == kTradeSide::kSell) {
             sell.push(quote);
         }
     }
-    stmt_->getMoreResults(); //free last result set
 }
 
 void OrderBook::updateQuote(const Quote &quote) {
     if (quote.quantity == 0) {
-        APIUtil::orderbookDelete(stmt_, quote.id);
+        api_.orderbookDelete(quote.id);
     } else {
-        APIUtil::orderbookUpdate(stmt_, quote.id, quote.quantity);
+        api_.orderbookUpdate(quote.id, quote.quantity);
     }
 }
 
 void OrderBook::updatePrice() {
-    APIUtil::securityUpdatePrice(stmt_, security_status_);
+    api_.securityUpdatePrice(security_status_);
 }
 
 bool OrderBook::isValid(const Quote &quote) const {
     int prev = security_status_.prev_close;
-    int delta = prev * 0.1;
-    if(quote.price < prev-delta || quote.price > prev+delta){
+    int delta = prev * MAX_PRICE_DELTA;
+    if (quote.price < prev - delta || quote.price > prev + delta) {
         return false;
     }
-    if(quote.quantity * quote.price > security_status_.market_cap * 0.05){
+    if (quote.quantity * quote.price > security_status_.market_cap * MAX_ORDER_VOLUMN) {
         return false;
     }
     return true;

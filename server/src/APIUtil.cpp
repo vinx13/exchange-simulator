@@ -1,23 +1,31 @@
 #include "APIUtil.h"
 #include "TradeRecord.h"
+#include "Logger.h"
+
 #include <sstream>
 
-void APIUtil::securityTryLock(APIUtil::StmtPtr stmt, const std::string &symbol, bool &result) {
+bool APIUtil::securityTryLock(const std::string &symbol, bool &result) {
     std::ostringstream s;
+    auto stmt = getStmt();
+    ResultSetPtr results;
+
     s << "CALL security_try_lock('" << symbol << "', @result)";
-    stmt->execute(s.str());
-    std::shared_ptr<sql::ResultSet> results(stmt->executeQuery("SELECT @result AS _result"));
+
+    if (!execute(stmt, s.str()) || !executeQuery(stmt, "SELECT @result AS _result", results)) {
+        return false;
+    }
     results->next();
     result = results->getBoolean("_result");
+    return true;
 }
 
-void APIUtil::securityUnlock(APIUtil::StmtPtr stmt, const std::string &symbol) {
+bool APIUtil::securityUnlock(const std::string &symbol) {
     std::ostringstream s;
     s << "CALL security_unlock('" << symbol << "')";
-    stmt->execute(s.str());
+    return execute(s.str());
 }
 
-void APIUtil::orderbookPut(APIUtil::StmtPtr stmt, const Quote &quote) {
+bool APIUtil::orderbookPut(const Quote &quote) {
     std::ostringstream s;
     s << "CALL orderbook_put("
     << "'" << quote.symbol.c_str() << "',"
@@ -26,54 +34,125 @@ void APIUtil::orderbookPut(APIUtil::StmtPtr stmt, const Quote &quote) {
     << "'" << static_cast<char>(quote.side) << "',"
     << quote.price << ","
     << quote.quantity << ")";
-    stmt->execute(s.str());
+    return execute(s.str());
 }
 
-void APIUtil::orderbookDelete(APIUtil::StmtPtr stmt, const int quote_id) {
+bool APIUtil::orderbookDelete(const int quote_id) {
     std::ostringstream s;
     s << "CALL orderbook_delete(" << quote_id << ")";
-    stmt->execute(s.str());
+    return execute(s.str());
 }
 
-void APIUtil::orderbookQueryMatch(StmtPtr stmt, const std::string &symbol) {
+bool APIUtil::orderbookQueryMatch(const std::string &symbol, ResultSetPtr &results) {
     std::ostringstream s;
     s << "CALL orderbook_query_match('" << symbol << "')";
-    stmt->execute(s.str());
+    return executeQuery(s.str(), results);
 }
 
-void APIUtil::orderbookUpdate(StmtPtr stmt, const int quote_id, const int quantity) {
+bool APIUtil::orderbookUpdate(const int quote_id, const int quantity) {
     std::ostringstream s;
     s << "CALL orderbook_update(" << quote_id << "," << quantity << ")";
-    stmt->execute(s.str());
+    return execute(s.str());
 }
 
-void APIUtil::systemStatusIsRunning(StmtPtr stmt, bool &result) {
-    stmt->execute("CALL systemstatus_is_running(@result)");
-    std::shared_ptr<sql::ResultSet> results(stmt->executeQuery("SELECT @result AS _result"));
-    results->next(); //only one result exists
-    result = results->getBoolean("_result");
+bool APIUtil::systemStatusIsRunning(bool &result) {
+    auto stmt = getStmt();
+    ResultSetPtr results;
+
+    if (!execute(stmt, "CALL systemstatus_is_running(@result)") ||
+        !executeQuery(stmt, "SELECT @result AS _result", results)) {
+        return false;
+    }
+    while (results->next())
+        result = results->getBoolean("_result");
+    return true;
 }
 
-void APIUtil::tradeRecordPut(StmtPtr stmt, const TradeRecord &record) {
+bool APIUtil::tradeRecordPut(const TradeRecord &record) {
     std::ostringstream s;
     s << "CALL traderecord_put("
     << record.order_buy << ","
     << record.order_sell << ","
     << record.price << ","
     << record.quantity << ")";
-    stmt->execute(s.str());
+    return execute(s.str());
 }
 
-void APIUtil::securityUpdatePrice(StmtPtr stmt, const SecurityStatus &security){
+bool APIUtil::securityUpdatePrice(const SecurityStatus &security) {
     std::ostringstream s;
     s << "CALL security_update_price('"
     << security.symbol << "',"
     << security.price << ")";
-    stmt->execute(s.str());
+    return execute(s.str());
 }
 
-void APIUtil::securityQuery(StmtPtr stmt, const std::string &symbol) {
+bool APIUtil::securityQuery(const std::string &symbol, SecurityStatus &result) {
     std::ostringstream s;
+    ResultSetPtr results;
+    auto stmt = getStmt();
     s << "CALL security_query('" << symbol << "')";
-    stmt->execute(s.str());
+    if (!executeQuery(stmt, s.str(), results)) {
+        return false;
+    }
+    while (results->next())
+        result = SecurityStatus(results);
+    stmt->getMoreResults();
+    return true;
+}
+
+bool APIUtil::checkConnection() {
+    if (conn_->isClosed()) {
+        try {
+            conn_->reconnect();
+        } catch (const sql::SQLException &e) {
+            logError(e, "reconnect");
+            return false;
+        }
+    }
+    return true;
+}
+
+bool APIUtil::execute(const std::string &s) {
+    return execute(getStmt(), s);
+}
+
+bool APIUtil::execute(StmtPtr stmt, const std::string &s) {
+    try {
+        stmt->execute(s);
+    } catch (const sql::SQLException &e) {
+        logError(e, s);
+        return false;
+    }
+    return true;
+}
+
+APIUtil::StmtPtr APIUtil::getStmt() {
+    checkConnection();
+    return std::shared_ptr<sql::Statement>(conn_->createStatement());
+}
+
+bool APIUtil::executeQuery(const std::string &s, std::shared_ptr<sql::ResultSet> &results) {
+    auto stmt = getStmt();
+    bool success = executeQuery(getStmt(), s, results);
+    stmt->getMoreResults();//free last results;
+    return success;
+}
+
+bool APIUtil::executeQuery(APIUtil::StmtPtr stmt, const std::string &s, std::shared_ptr<sql::ResultSet> &results) {
+    try {
+        results.reset(stmt->executeQuery(s));
+    } catch (const sql::SQLException &e) {
+        logError(e, s);
+        return false;
+    }
+    return true;
+}
+
+void APIUtil::logError(const sql::SQLException &e, const std::string &query_string) {
+    std::ostringstream os;
+    os << "APIUtil: SQLException when executing '" << query_string
+    << "'. # ERR: " << e.what()
+    << " (MySQL error code: " << e.getErrorCode() <<
+    ", SQLState: " << e.getSQLState() << " )";
+    Logger::getLogger()->error(os.str());
 }

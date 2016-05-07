@@ -9,31 +9,53 @@
 #include <string>
 #include <memory>
 #include <cppconn/statement.h>
+#include <cppconn/connection.h>
 
 class APIUtil {
 public:
+    typedef std::shared_ptr<sql::Connection> ConnPtr;
     typedef std::shared_ptr<sql::Statement> StmtPtr;
+    typedef std::shared_ptr<sql::ResultSet> ResultSetPtr;
 
-    static void securityTryLock(StmtPtr stmt, const std::string &symbol, bool &result);
 
-    static void securityUnlock(StmtPtr stmt, const std::string &symbol);
+    APIUtil(const ConnPtr &conn_) : conn_(conn_) { }
 
-    static void securityUpdatePrice(StmtPtr stmt, const SecurityStatus &security);
+    bool securityTryLock(const std::string &symbol, bool &result);
 
-    static void securityQuery(StmtPtr stmt, const std::string &symbol);
+    bool securityUnlock(const std::string &symbol);
 
-    static void orderbookPut(StmtPtr stmt, const Quote &quote);
+    bool securityUpdatePrice(const SecurityStatus &security);
 
-    static void orderbookDelete(StmtPtr stmt, const int quote_id);
+    bool securityQuery(const std::string &symbol, SecurityStatus &result);
 
-    static void orderbookQueryMatch(StmtPtr stmt, const std::string &symbol);
+    bool orderbookPut(const Quote &quote);
 
-    static void orderbookUpdate(StmtPtr stmt, const int quote_id, const int quantity);
+    bool orderbookDelete(const int quote_id);
 
-    static void systemStatusIsRunning(StmtPtr stmt, bool &result);
+    bool orderbookQueryMatch(const std::string &symbol, ResultSetPtr &result);
 
-    static void tradeRecordPut(StmtPtr stmt, const TradeRecord &record);
+    bool orderbookUpdate(const int quote_id, const int quantity);
+
+    bool systemStatusIsRunning(bool &result);
+
+    bool tradeRecordPut(const TradeRecord &record);
+
+private:
+    StmtPtr getStmt();
+
+    bool checkConnection();
+
+    bool execute(const std::string &s);
+
+    bool execute(StmtPtr stmt, const std::string &s);
+
+    bool executeQuery(const std::string &s, std::shared_ptr<sql::ResultSet> &results);
+
+    bool executeQuery(StmtPtr stmt, const std::string &s, std::shared_ptr<sql::ResultSet> &results);
+
+    void logError(const sql::SQLException &e, const std::string &query_string);
+
+    ConnPtr conn_;
 };
-
 
 #endif //EXCHANGESIMULATOR_SERVER_APIUTIL_H
