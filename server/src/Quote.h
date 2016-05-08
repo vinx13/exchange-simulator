@@ -22,7 +22,7 @@ struct Quote {
         side = static_cast<kTradeSide>(message->getField<Fix42::kFieldName::kSide>()->getValue());
         quantity = message->getField<Fix42::kFieldName::kOrderQty>()->getValue();
         //stores it as an integer to avoid precision loss with floating number
-        price = message->getField<Fix42::kFieldName::kPrice>()->getValue() * 100;
+        price = toIntPrice(message->getField<Fix42::kFieldName::kPrice>()->getValue());
     }
 
     Quote(std::shared_ptr<sql::ResultSet> res) {
@@ -34,6 +34,10 @@ struct Quote {
         quantity = res->getInt("quantity");
         side = static_cast<kTradeSide>(res->getString("side")[0]);
     }
+
+    static int toIntPrice(double original) { return original * 100; }
+
+    static double toOriginalPrice(int intPrice) { return intPrice / 100.0; }
 
 };
 

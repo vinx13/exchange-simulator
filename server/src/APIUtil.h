@@ -17,6 +17,7 @@ public:
     typedef std::shared_ptr<sql::Statement> StmtPtr;
     typedef std::shared_ptr<sql::ResultSet> ResultSetPtr;
 
+    static const std::string TAG;
 
     APIUtil(const ConnPtr &conn_) : conn_(conn_) { }
 

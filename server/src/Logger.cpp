@@ -6,21 +6,21 @@
 
 std::shared_ptr<Logger> Logger::instance__ = std::shared_ptr<Logger>(new Logger());
 
-void Logger::info(const std::string &s) {
-    print(s, kLoggerLevel::kInfo);
+void Logger::info(const std::string &tag, const std::string &s) {
+    print(tag, s, kLoggerLevel::kInfo);
 }
 
-void Logger::debug(const std::string &s) {
-    print(s, kLoggerLevel::kDebug);
+void Logger::debug(const std::string &tag, const std::string &s) {
+    print(tag, s, kLoggerLevel::kDebug);
 }
 
-void Logger::error(const std::string &s) {
-    print(s, kLoggerLevel::kError);
+void Logger::error(const std::string &tag, const std::string &s) {
+    print(tag, s, kLoggerLevel::kError);
 }
 
-void Logger::print(const std::string &s, const kLoggerLevel level) {
+void Logger::print(const std::string &tag, const std::string &s, const kLoggerLevel level) {
     std::ostringstream os;
-    addLogHead(os, level);
+    addLogHead(os, tag, level);
     os << s << std::endl;
     std::string complete = os.str();
     std::lock_guard<std::mutex> lock(mutex_);
@@ -31,8 +31,8 @@ void Logger::print(const std::string &s, const kLoggerLevel level) {
 }
 
 
-void Logger::addLogHead(std::ostream &dest, const Logger::kLoggerLevel level) const {
-    dest << getFormatedTime() << " [" << levelToString(level) << "] ";
+void Logger::addLogHead(std::ostream &dest, const std::string &tag, const Logger::kLoggerLevel level) const {
+    dest << getFormatedTime() << " [" << levelToString(level) << "] " << tag << ": ";
 }
 
 std::string Logger::levelToString(const Logger::kLoggerLevel level) const {

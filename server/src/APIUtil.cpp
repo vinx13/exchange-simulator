@@ -4,6 +4,8 @@
 
 #include <sstream>
 
+const std::string APIUtil::TAG("APIUtil");
+
 bool APIUtil::securityTryLock(const std::string &symbol, bool &result) {
     std::ostringstream s;
     auto stmt = getStmt();
@@ -154,5 +156,5 @@ void APIUtil::logError(const sql::SQLException &e, const std::string &query_stri
     << "'. # ERR: " << e.what()
     << " (MySQL error code: " << e.getErrorCode() <<
     ", SQLState: " << e.getSQLState() << " )";
-    Logger::getLogger()->error(os.str());
+    Logger::getLogger()->error(TAG,os.str());
 }

@@ -31,6 +31,8 @@ public:
 
     std::vector<TradeRecord> execute();
 
+    bool isValid(const Quote &quote) const;
+
 private:
     std::string symbol_;
     std::vector<Quote> quotes_;
@@ -50,7 +52,6 @@ private:
 
     void updatePrice();
 
-    bool isValid(const Quote &quote) const;
 
 };
 
