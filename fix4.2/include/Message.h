@@ -89,7 +89,7 @@ protected:
     FieldValueContainer field_values_;
     RepeatGroupContainer repeat_groups_;
 
-    std::string begin_string_;
+    std::string begin_string_ = "FIX.4.2";
     mutable int body_length_ = 0; //will be lazy set
 
 };
