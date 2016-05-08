@@ -45,6 +45,7 @@ CREATE TABLE `ExchangeSimulator`.`OrderArchive` (
     `side` CHAR(1) NOT NULL ,
     `price` INT NOT NULL ,
     `quantity` INT NOT NULL ,
+    `ori_quantity` INT NOT NULL ,
     `time` TIMESTAMP NOT NULL ,
     PRIMARY KEY (`id`)
     ) ENGINE = InnoDB;
