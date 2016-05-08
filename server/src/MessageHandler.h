@@ -5,6 +5,7 @@
 #include "Fix42.h"
 #include "TradeRecord.h"
 #include "ConnectionFactory.h"
+#include "Quote.h"
 
 #include <vector>
 #include <memory>
@@ -16,9 +17,15 @@ public:
     Fix42::MessagePtr accept(const Fix42::MessagePtr message);
 
 protected:
-    std::vector<TradeRecord> handleSingleOrder(const Fix42::MessagePtr message);
+    Fix42::MessagePtr onSingleOrder(const Fix42::MessagePtr message);
 
     ConnectionFactory::ConnectionPtr dbconn_;
+
+    Fix42::MessagePtr createMsgOrdAc(const Quote &quote);
+
+    Fix42::MessagePtr createMsgOrdReject(const Quote &quote);
+
+    void addBasicFields(const Quote &quote, std::shared_ptr<Fix42::Message> &message) const;
 };
 
 
