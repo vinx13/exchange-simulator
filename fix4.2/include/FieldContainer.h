@@ -4,10 +4,20 @@
 #include "Common.h"
 #include "Exceptions.h"
 #include "FieldValue.h"
+#include "FieldTypeMap.h"
 #include <map>
 #include <memory>
 
 __FIX42_BEGIN
+
+//template alias
+template<kFieldName name>
+using __FieldValueType = typename FieldValueType<FieldTypeMap::get(name)>::Type;
+template<kFieldName name>
+using __FieldValuePtrType = std::shared_ptr<__FieldValueType<name>>;
+template<kFieldName name>
+using __FieldValueConstPtrType = typename std::add_const<__FieldValuePtrType<name> >::type;
+
 
 /* Top level field container, storing fields and repeating groups */
 template<class T>
@@ -48,9 +58,26 @@ public:
         return fields_.size();
     };
 
+    template<kFieldName name>
+    __FieldValueConstPtrType<name> getField() const {
+        return std::static_pointer_cast<__FieldValueType<name>>(
+                get(static_cast<Tag>(name))
+        );
+    }
+
+    template<kFieldName name, class ...Arg>
+    void setField(Arg ...arg) {
+        set(static_cast<Tag>(name),
+            std::make_shared<__FieldValueType<name>>
+                    (std::forward<Arg>(arg)...));
+    }
+
     typename Container::iterator begin() { return fields_.begin(); }
+
     typename Container::iterator end() { return fields_.end(); }
+
     typename Container::const_iterator begin() const { return fields_.begin(); }
+
     typename Container::const_iterator end() const { return fields_.end(); }
 
 private:
@@ -58,6 +85,7 @@ private:
 };
 
 class FieldValue;
+
 class RepeatGroup;
 
 typedef FieldContainer<FieldValue> FieldValueContainer;

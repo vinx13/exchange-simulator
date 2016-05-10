@@ -37,9 +37,7 @@ void Message::parse(std::string::const_iterator begin, std::string::const_iterat
 
 void Message::parseRepeatGroup(MessageParser &parser, const Tag tag) {
     auto repeat_group = std::make_shared<RepeatGroup>();
-    auto &repeat_units = repeat_group->getGroups();
 
-    //repeat_groups_->set(tag, repeat_group);
     auto count_field = parser.goNextFieldValue(kFieldType::kRepeatGroup);
     int count = std::static_pointer_cast<IntFieldValue>(count_field)->getValue(); //number of repeating units
 
@@ -52,10 +50,13 @@ void Message::parseRepeatGroup(MessageParser &parser, const Tag tag) {
             auto field_value = parser.goNextFieldValue(FieldTypeMap::get(subtag));
             repeat_unit->set(subtag, field_value);
             last_tag = subtag;
-            subtag = parser.goNextTag();
+
+            // if there is available tag to be parsed, read and check whether it belongs to current repeating unit;
+            // otherwise finish parsing current repeating unit by setting subtag to -1
+            subtag = parser.isDone() ? -1 : parser.goNextTag();
         }
         parser.goLastStart();
-        repeat_units.push_back(repeat_unit);
+        repeat_group->addUnit(repeat_unit);
     }
 
     repeat_groups_.set(tag, repeat_group);

@@ -14,16 +14,6 @@ __FIX42_BEGIN
 
 class Message {
 public:
-
-    //template alias
-    template<kFieldName name>
-    using __FieldValueType = typename FieldValueType<FieldTypeMap::get(name)>::Type;
-    template<kFieldName name>
-    using __FieldValuePtrType = std::shared_ptr<__FieldValueType<name>>;
-    template<kFieldName name>
-    using __FieldValueConstPtrType = typename std::add_const<__FieldValuePtrType<name> >::type;
-
-
     Message();
 
     explicit Message(const std::string &s);
@@ -35,6 +25,8 @@ public:
     RepeatGroupPtr getRepeatGroup(kFieldName name) { return repeat_groups_.get(static_cast<Tag>(name)); }
 
     const RepeatGroupPtr getRepeatGroup(kFieldName name) const { return repeat_groups_.get(static_cast<Tag>(name)); }
+
+    void setRepeatGroup(kFieldName name, RepeatGroupPtr group) { repeat_groups_.set(static_cast<Tag>(name), group); }
 
     kMessageType getType() const;
 
@@ -74,7 +66,6 @@ public:
                 std::make_shared<__FieldValueType<name>>
                         (std::forward<Arg>(arg)...));
     }
-
 
 protected:
 
