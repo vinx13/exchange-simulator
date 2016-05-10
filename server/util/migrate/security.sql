@@ -39,3 +39,13 @@ CREATE PROCEDURE security_query(IN symbol_ TEXT)
 BEGIN
     SELECT * from `Security` WHERE `symbol` = symbol_;
 END//
+
+CREATE PROCEDURE security_stop_trading(IN symbol_ TEXT)
+BEGIN
+    UPDATE `Security` SET `trading` = FALSE WHERE `symbol` = symbol_;
+END//
+
+CREATE PROCEDURE security_start_trading(IN symbol_ TEXT)
+BEGIN
+    UPDATE `Security` SET `trading` = TRUE WHERE `symbol` = symbol_;
+END//

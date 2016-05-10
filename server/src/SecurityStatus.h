@@ -9,6 +9,7 @@
 struct SecurityStatus {
     std::string symbol;
     int price, prev_close, market_cap;
+    bool trading;
 
     SecurityStatus() = default;
 
@@ -17,6 +18,7 @@ struct SecurityStatus {
         price = res->getInt("price");
         prev_close = res->getInt("prev_close");
         market_cap = res->getInt("mkt_cap");
+        trading = res->getBoolean("trading");
     }
 };
 

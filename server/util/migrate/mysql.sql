@@ -22,6 +22,7 @@ CREATE TABLE `ExchangeSimulator`.`Security` (
     `price` INT NOT NULL ,
     `prev_close` INT NOT NULL ,
     `mkt_cap` BIGINT NOT NULL,
+    `trading` BOOLEAN NOT NULL DEFAULT FALSE,
     `lock` BOOLEAN NOT NULL DEFAULT FALSE,
     PRIMARY KEY (`symbol`(8))
     ) ENGINE = InnoDB;

@@ -102,6 +102,19 @@ bool APIUtil::securityQuery(const std::string &symbol, SecurityStatus &result) {
     return true;
 }
 
+
+bool APIUtil::securtiyStartTrading(const std::string &symbol) {
+    std::ostringstream s;
+    s << "CALL security_start_trading('" << symbol << "')";
+    return execute(s.str());
+}
+
+bool APIUtil::securityStopTrading(const std::string &symbol) {
+    std::ostringstream s;
+    s << "CALL security_stop_trading('" << symbol << "')";
+    return execute(s.str());
+}
+
 bool APIUtil::checkConnection() {
     if (conn_->isClosed()) {
         try {

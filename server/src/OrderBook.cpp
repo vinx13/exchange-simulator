@@ -5,8 +5,10 @@ const double OrderBook::MAX_PRICE_DELTA = 0.1;
 const double OrderBook::MAX_ORDER_VOLUMN = 0.05;
 
 OrderBook::OrderBook(std::string symbol, APIUtil::ConnPtr conn) : symbol_(symbol), conn_(conn), api_(conn) {
-    api_.securityQuery(symbol_, security_status_);
+    loadStatus();
 }
+
+void OrderBook::loadStatus() { api_.securityQuery(symbol_, security_status_); }
 
 OrderBook::~OrderBook() {
     if (has_lock_) {
@@ -31,16 +33,33 @@ void OrderBook::unlock() {
     has_lock_ = false;
 }
 
-std::vector<TradeRecord> OrderBook::execute() {
+std::shared_ptr<std::vector<TradeRecord>> OrderBook::execute() {
+    static const std::shared_ptr<std::vector<TradeRecord>> NONE;
+
     bool is_running = false;
     api_.systemStatusIsRunning(is_running);
     if (!is_running) {
-        return std::vector<TradeRecord>();
+        return NONE;
     }
 
-    lock(); //TODO check whether locked
+    lock();
+    loadStatus();
+    if (!security_status_.trading) {
+        return NONE;
+    }
+    auto records = doTrade();
+
+    unlock();
+
+    for (auto &record: *records) {
+        api_.tradeRecordPut(record);
+    }
+    return records;
+}
+
+std::shared_ptr<std::vector<TradeRecord>> OrderBook::doTrade() {
     std::queue<Quote> buy_quotes, sell_quotes;
-    std::vector<TradeRecord> records;
+    auto records = std::make_shared<std::vector<TradeRecord>>();
     match(buy_quotes, sell_quotes);
 
     //buy/sell_quotes are sorted by price and time descending order
@@ -51,7 +70,7 @@ std::vector<TradeRecord> OrderBook::execute() {
             auto &sell = sell_quotes.front();
             TradeRecord record;
 
-            int qty = std::min(buy.quantity, sell.quantity);
+            int qty = std::__1::min(buy.quantity, sell.quantity);
             buy.quantity -= qty;
             sell.quantity -= qty;
 
@@ -65,7 +84,7 @@ std::vector<TradeRecord> OrderBook::execute() {
             record.quantity = qty;
             record.order_buy = buy.id;
             record.order_sell = sell.id;
-            records.push_back(record);
+            records->push_back(record);
 
             if (buy.quantity == 0) {
                 buy_quotes.pop();
@@ -80,11 +99,6 @@ std::vector<TradeRecord> OrderBook::execute() {
             buy_quotes.pop();
         }
 
-    }
-    unlock();
-
-    for (auto &record:records) {
-        api_.tradeRecordPut(record);
     }
     return records;
 }

@@ -10,6 +10,7 @@
 
 #include <vector>
 #include <string>
+#include <memory>
 #include <queue>
 #include <cppconn/statement.h>
 #include <cppconn/connection.h>
@@ -29,7 +30,7 @@ public:
 
     std::vector<Quote> &get() { return quotes_; }
 
-    std::vector<TradeRecord> execute();
+    std::shared_ptr<std::vector<TradeRecord>> execute();
 
     bool isValid(const Quote &quote) const;
 
@@ -52,7 +53,9 @@ private:
 
     void updatePrice();
 
+    void loadStatus();
 
+    std::shared_ptr<std::vector<TradeRecord>> doTrade();
 };
 
 

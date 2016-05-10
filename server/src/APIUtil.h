@@ -29,6 +29,10 @@ public:
 
     bool securityQuery(const std::string &symbol, SecurityStatus &result);
 
+    bool securtiyStartTrading(const std::string &symbol);
+
+    bool securityStopTrading(const std::string &symbol);
+
     bool orderbookPut(const Quote &quote);
 
     bool orderbookDelete(const int quote_id);
