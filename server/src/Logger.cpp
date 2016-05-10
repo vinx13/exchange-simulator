@@ -4,7 +4,16 @@
 #include <sstream>
 #include <iostream>
 
-std::shared_ptr<Logger> Logger::instance__ = std::shared_ptr<Logger>(new Logger());
+std::shared_ptr<Logger> Logger::instance__;
+
+std::shared_ptr<Logger> Logger::getLogger() {
+    if (instance__)
+        return instance__;
+    instance__.reset(new Logger(Config::getGlobalConfig()->logfile));
+    return instance__;
+}
+
+Logger::Logger(std::string filename) : log_stream_(filename, std::fstream::app) { }
 
 void Logger::info(const std::string &tag, const std::string &s) {
     print(tag, s, kLoggerLevel::kInfo);
@@ -27,7 +36,9 @@ void Logger::print(const std::string &tag, const std::string &s, const kLoggerLe
     if (Config::getGlobalConfig()->debug) {
         std::cout << complete;
     }
-    //TODO write to log file
+    if (log_stream_.is_open() && levelCompareTo(level) <= 0) {
+        log_stream_ << complete;
+    }
 }
 
 
@@ -58,4 +69,6 @@ std::string Logger::getFormatedTime() const {
     return buf;
 }
 
-
+int Logger::levelCompareTo(const kLoggerLevel level) const {
+    return static_cast<int>(level_) - static_cast<int>(level);
+}
