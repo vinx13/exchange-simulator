@@ -1,55 +1,31 @@
 #include "MessageDispatcher.h"
-#include "OrderBook.h"
+#include "OrderHandler.h"
+#include "Logger.h"
 
+#include <sstream>
 
-Fix42::MessagePtr MessageDispatcher::accept(const Fix42::MessagePtr message) {
+const std::string MessageDispatcher::TAG("MessageDispatcher");
+
+Fix42::MessagePtr MessageDispatcher::dispatch(const Fix42::MessagePtr message) {
 
     auto type = message->getType();
 
-    switch (type) {
-        case Fix42::kMessageType::kNewOrderSingle:
-            return onSingleOrder(message);
-            //TODO handle trade records
-        default:
-            return Fix42::MessagePtr();
+    if (handler_map_.find(type) != handler_map_.end()) {
+        return handler_map_.at(type)->accept(message);
     }
+
+    logUnknown(type);
+    return Fix42::MessagePtr();
 }
 
-Fix42::MessagePtr MessageDispatcher::onSingleOrder(const Fix42::MessagePtr message) {
-    //TODO: catch exception when fields do not exist
-    OrderBook order_book(message->getField<Fix42::kFieldName::kSymbol>()->getValue(), dbconn_);
-    Quote quote(message);
-
-    if (order_book.isValid(quote)) {
-        order_book.put(quote);
-        order_book.execute();
-        return createMsgOrdAc(quote);
-    } else {
-        return createMsgOrdReject(quote);
-    }
+void MessageDispatcher::logUnknown(const Fix42::kMessageType &type) const {
+    std::ostringstream error_msg;
+    error_msg << "unknown message type '" << static_cast<char>(type) + '\'';
+    Logger::getLogger()->error(TAG, error_msg.str());
 }
 
-Fix42::MessagePtr MessageDispatcher::createMsgOrdAc(const Quote &quote) {
-    auto message = std::make_shared<Fix42::Message>();
-    addBasicFields(quote, message);
-    message->setField<Fix42::kFieldName::kOrdStatus>(0);//new
-    return message;
-}
-
-Fix42::MessagePtr MessageDispatcher::createMsgOrdReject(const Quote &quote) {
-    auto message = std::make_shared<Fix42::Message>();
-    addBasicFields(quote, message);
-    message->setField<Fix42::kFieldName::kOrdStatus>(8);//reject
-    return message;
-}
-
-void MessageDispatcher::addBasicFields(const Quote &quote, std::shared_ptr<Fix42::Message> &message) const {
-    message->setType(Fix42::kMessageType::kExecutionReport);
-    message->setField<Fix42::kFieldName::kClOrdID>(quote.client_order_id);
-    message->setField<Fix42::kFieldName
-    ::kCumQty>(0);
-    message->setField<Fix42::kFieldName::kSymbol>(quote.symbol);
-    message->setField<Fix42::kFieldName::kSide>(static_cast<char>(quote.side));
-    message->setField<Fix42::kFieldName::kPrice>(Quote::toOriginalPrice(quote.price));
-    message->setField<Fix42::kFieldName::kOrderQty>(quote.quantity);
+void MessageDispatcher::initHandlerMap() {
+    auto order_handler = std::make_shared<OrderHandler>(dbconn_);
+    handler_map_[Fix42::kMessageType::kNewOrderSingle] = order_handler;
+    handler_map_[Fix42::kMessageType::kNewOrderList] = order_handler;
 }

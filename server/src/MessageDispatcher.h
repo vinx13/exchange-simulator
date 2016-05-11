@@ -1,32 +1,32 @@
-#ifndef EXCHANGESIMULATOR_SERVER_MESSAGEHANDLER_H
-#define EXCHANGESIMULATOR_SERVER_MESSAGEHANDLER_H
+#ifndef EXCHANGESIMULATOR_SERVER_MESSAGEDISPATCH_H
+#define EXCHANGESIMULATOR_SERVER_MESSAGEDISPATCH_H
 
 
 #include "Fix42.h"
-#include "TradeRecord.h"
 #include "ConnectionFactory.h"
-#include "Quote.h"
+#include "MessageHandler.h"
 
-#include <vector>
 #include <memory>
+#include <string>
+#include <map>
 
 class MessageDispatcher {
 public:
-    MessageDispatcher(ConnectionFactory::ConnectionPtr dbconn) : dbconn_(dbconn) { }
+    static const std::string TAG;
 
-    Fix42::MessagePtr accept(const Fix42::MessagePtr message);
+    void initHandlerMap();
 
-protected:
-    Fix42::MessagePtr onSingleOrder(const Fix42::MessagePtr message);
+    MessageDispatcher(ConnectionFactory::ConnectionPtr dbconn) : dbconn_(dbconn) { initHandlerMap(); }
+
+    Fix42::MessagePtr dispatch(const Fix42::MessagePtr message);
+
+private:
+    std::map<Fix42::kMessageType, std::shared_ptr<MessageHandler>> handler_map_;
 
     ConnectionFactory::ConnectionPtr dbconn_;
 
-    Fix42::MessagePtr createMsgOrdAc(const Quote &quote);
-
-    Fix42::MessagePtr createMsgOrdReject(const Quote &quote);
-
-    void addBasicFields(const Quote &quote, std::shared_ptr<Fix42::Message> &message) const;
+    void logUnknown(const Fix42::kMessageType &type) const;
 };
 
 
-#endif //EXCHANGESIMULATOR_SERVER_MESSAGEHANDLER_H
+#endif //EXCHANGESIMULATOR_SERVER_MESSAGEDISPATCH_H
