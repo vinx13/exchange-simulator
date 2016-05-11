@@ -16,13 +16,11 @@ struct Quote {
     kTradeSide side;
 
     Quote(const Fix42::MessagePtr message) {
-        symbol = message->getField<Fix42::kFieldName::kSymbol>()->getValue();
-        client = message->getField<Fix42::kFieldName::kClientID>()->getValue();
-        client_order_id = message->getField<Fix42::kFieldName::kClOrdID>()->getValue();
-        side = static_cast<kTradeSide>(message->getField<Fix42::kFieldName::kSide>()->getValue());
-        quantity = message->getField<Fix42::kFieldName::kOrderQty>()->getValue();
-        //stores it as an integer to avoid precision loss with floating number
-        price = toIntPrice(message->getField<Fix42::kFieldName::kPrice>()->getValue());
+        fromContainer(message, *this);
+    }
+
+    Quote(const Fix42::FieldValueContainerPtr fields) {
+        fromContainer(fields, *this);
     }
 
     Quote(std::shared_ptr<sql::ResultSet> res) {
@@ -39,6 +37,17 @@ struct Quote {
 
     static double toOriginalPrice(int intPrice) { return intPrice / 100.0; }
 
+private:
+    template<class Container>
+    static void fromContainer(const std::shared_ptr<Container> container, Quote &dest) {
+        dest.symbol = container->template getField<Fix42::kFieldName::kSymbol>()->getValue();
+        dest.client = container->template getField<Fix42::kFieldName::kClientID>()->getValue();
+        dest.client_order_id = container->template getField<Fix42::kFieldName::kClOrdID>()->getValue();
+        dest.side = static_cast<kTradeSide>(container->template getField<Fix42::kFieldName::kSide>()->getValue());
+        dest.quantity = container->template getField<Fix42::kFieldName::kOrderQty>()->getValue();
+        //stores it as an integer to avoid precision loss with floating number
+        dest.price = toIntPrice(container->template getField<Fix42::kFieldName::kPrice>()->getValue());
+    }
 };
 
 

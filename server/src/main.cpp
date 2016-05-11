@@ -14,7 +14,6 @@ int main(int argc, char **argv) {
         std::cout << "Invalid options";
         exit(EXIT_FAILURE);
     }
-    Master master;
-    master.start();
+    Master::getInstance()->start();
     return 0;
 }

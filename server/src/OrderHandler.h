@@ -1,62 +1,35 @@
-#ifndef EXCHANGESIMULATOR_SERVER_ORDERBOOK_H
-#define EXCHANGESIMULATOR_SERVER_ORDERBOOK_H
+#ifndef EXCHANGESIMULATOR_SERVER_ORDERHANDLER_H
+#define EXCHANGESIMULATOR_SERVER_ORDERHANDLER_H
 
 
-#include "Quote.h"
 #include "Fix42.h"
-#include "TradeRecord.h"
-#include "SecurityStatus.h"
+#include "MessageHandler.h"
+#include "Quote.h"
 #include "APIUtil.h"
 
 #include <vector>
-#include <string>
 #include <memory>
-#include <queue>
-#include <cppconn/statement.h>
-#include <cppconn/connection.h>
 
-class OrderHandler {
+class OrderHandler : public MessageHandler {
 public:
-    static const double MAX_PRICE_DELTA;
-    static const double MAX_ORDER_VOLUMN;
 
-    OrderHandler(std::string symbol, APIUtil::ConnPtr conn);
+    OrderHandler(APIUtil::ConnPtr conn) : dbconn_(conn) { }
 
-    ~OrderHandler();
+    virtual std::vector<Fix42::MessagePtr> accept(const Fix42::MessagePtr message) override;
 
-    void put(const Quote &quote);
-
-    const std::vector<Quote> &get() const { return quotes_; }
-
-    std::vector<Quote> &get() { return quotes_; }
-
-    std::shared_ptr<std::vector<TradeRecord>> execute();
-
-    bool isValid(const Quote &quote) const;
+    void handleSingleOrder(const Quote &quote, std::vector<Fix42::MessagePtr> &results);
 
 private:
-    std::string symbol_;
-    std::vector<Quote> quotes_;
-    SecurityStatus security_status_;
-    APIUtil::ConnPtr conn_;
-    APIUtil api_;
+    APIUtil::ConnPtr dbconn_;
 
-    bool has_lock_ = false;
+    Fix42::MessagePtr createMsgAccept(const Quote &quote);
 
-    void lock();
+    Fix42::MessagePtr createMsgReject(const Quote &quote);
 
-    void unlock();
+    void addBasicFields(const Quote &quote, std::shared_ptr<Fix42::Message> &message) const;
 
-    void match(std::queue<Quote> &buy, std::queue<Quote> &sell);
 
-    void updateQuote(const Quote &quote);
-
-    void updatePrice();
-
-    void loadStatus();
-
-    std::shared_ptr<std::vector<TradeRecord>> doTrade();
 };
 
 
-#endif //EXCHANGESIMULATOR_SERVER_ORDERBOOK_H
+#endif //EXCHANGESIMULATOR_SERVER_ORDERHANDLER_H
