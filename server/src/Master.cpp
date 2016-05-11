@@ -12,14 +12,13 @@ std::shared_ptr<Master> Master::getInstance() {
     if (!instance__)
         instance__.reset(new Master());
     return instance__;
-
 }
-
 
 void Master::sigintHandler(int signum) {
     if (signum == SIGABRT) {
         Logger::getLogger()->info(TAG, "Signal int received.");
         Master::getInstance()->stop();
+        Master::getInstance().reset(nullptr);
         exit(EXIT_SUCCESS);
     }
 }
