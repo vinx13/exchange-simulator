@@ -13,18 +13,18 @@ __FIX42_BEGIN
 /* A repeating group is comprised with multiple field containers (repeating unit) */
 class RepeatGroup {
 public:
-    int count() const { return groups_.size(); }
+    int count() const { return units_.size(); }
 
-    std::vector<FieldValueContainerPtr> &getUnits() { return groups_; }
+    std::vector<FieldValueContainerPtr> &getUnits() { return units_; }
 
-    const std::vector<FieldValueContainerPtr> &getUnits() const { return groups_; }
+    const std::vector<FieldValueContainerPtr> &getUnits() const { return units_; }
 
-    void addUnit(const FieldValueContainerPtr unit) { groups_.push_back(unit); }
+    void addUnit(const FieldValueContainerPtr unit) { units_.push_back(unit); }
 
     std::string toString() const;
 
 private:
-    std::vector<FieldValueContainerPtr> groups_;
+    std::vector<FieldValueContainerPtr> units_;
 };
 
 __FIX42_END
