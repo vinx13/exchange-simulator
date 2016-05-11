@@ -2,7 +2,7 @@
 #define EXCHANGESIMULATOR_SERVER_WORKER_H
 
 
-#include "MessageHandler.h"
+#include "MessageDispatcher.h"
 #include "ConnectionFactory.h"
 
 #include <vector>
@@ -19,12 +19,17 @@ struct BufferContext;
 
 class Worker {
 public:
+    static const std::string TAG;
 
     static void workerMain(Worker *worker);
 
-    static void registerConnection(evutil_socket_t fd, short what, void *arg);
+    static void onMasterCommand(evutil_socket_t fd, short what, void *arg);
 
-    static void readBuffer(bufferevent *bev, void *arg);
+    static void bevOnRead(bufferevent *bev, void *arg);
+
+    static void bevOnWrite(bufferevent *bev, void *arg);
+
+    static void bevOnError(bufferevent *bev, short what, void *arg);
 
 
     Worker(evutil_socket_t notify_conn_fd);
@@ -39,18 +44,23 @@ public:
 
     BufferContext *bufferContextAlloc();
 
-    void processInput(const char *buf, const int len, BufferContext *context);
+    void processInput(bufferevent *bev, const char *buf, const int len, BufferContext *context);
 
 private:
     std::unique_ptr<std::thread> worker_thread_;
-    std::vector<evutil_socket_t> conn_fds_;
+    std::vector<bufferevent *> conn_bevs_;
     std::queue<evutil_socket_t> new_conn_fds_;
     std::mutex conn_mutex_;
-    evutil_socket_t notify_conn_fd_;
+    evutil_socket_t master_cmd_fd_;
     event_base *event_base_;
     std::vector<BufferContext *> buffer_contexts_;
     ConnectionFactory::ConnectionPtr dbconn_;
-    MessageHandler processor_;
+    MessageDispatcher dispatcher_;
+    event *event_master_cmd_;
+
+    void registerConnection(int fd);
+
+    void deregisterConnection(bufferevent *bev);
 };
 
 

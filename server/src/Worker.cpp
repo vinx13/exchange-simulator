@@ -1,15 +1,18 @@
 #include "Worker.h"
 #include "Fix42.h"
+#include "Logger.h"
+#include "Master.h"
 #include <string>
 
 static const std::string EXPECT_HEADER = "8=FIX.4.2\0019=";
-static const int EXPECT_HEADER_LEN = EXPECT_HEADER.length();
+static const int EXPECT_HEADER_LEN = 13;/*EXPECT_HEADER.length();*/
+
+const std::string Worker::TAG("Worker");
 
 struct BufferContext {
     Worker *worker;
     std::vector<char> data;
     int header_cur_pos;
-    int header_remained_len;
     int body_remained_len;
 
     BufferContext(Worker *worker) : worker(worker) { reset(); }
@@ -17,7 +20,6 @@ struct BufferContext {
     void reset() {
         data.clear();
         header_cur_pos = 0;
-        header_remained_len = EXPECT_HEADER_LEN;
         body_remained_len = -1;
     }
 };
@@ -28,66 +30,36 @@ BufferContext *Worker::bufferContextAlloc() {
     return context;
 }
 
+
 void Worker::workerMain(Worker *worker) {
     event_base_dispatch(worker->event_base_);
 }
 
-void Worker::readBuffer(bufferevent *bev, void *arg) {
+void Worker::deregisterConnection(bufferevent *bev) {
+    bufferevent_free(bev);
+
+}
+
+
+void Worker::bevOnError(bufferevent *bev, short what, void *arg) {
+    Logger::getLogger()->error(TAG, "bufferevent error code " + std::to_string(what));
+    if (what & BEV_EVENT_EOF) {
+        static_cast<Worker *>(arg)->deregisterConnection(bev);
+    }
+}
+
+void Worker::bevOnRead(bufferevent *bev, void *arg) {
     BufferContext *context = static_cast<BufferContext *>(arg);
     const int BUF_SIZE = 1024;
     char buf[BUF_SIZE];
     int len = bufferevent_read(bev, buf, BUF_SIZE);
-    context->worker->processInput(buf, len, context);
+    Logger::getLogger()->debug(TAG, "Worker: message received. " + std::string(buf, buf + len));
+    context->worker->processInput(bev, buf, len, context);
+    //bufferevent_write(bev, "hello", 5); //FIXME
 }
 
-
-/***
-    if (context->header_remained_len > 0) {
-        char buf[EXPECT_HEADER_LEN];
-        int read_len = bufferevent_read(bev, buf, context->header_remained_len);
-        bool invalid = false; //FIXME: Encapsulate as a function
-        for (int i = 0; i < read_len; i++) {
-            if (buf[i] != EXPECT_HEADER[context->header_cur_pos++]) {
-                invalid = true;
-            }
-        }
-        if (invalid) {
-            context->reset();
-            //TODO: Process error
-        } else {
-
-            context->header_remained_len -= read_len;
-            context->data.insert(context->data.end(), buf, buf + read_len);
-        }
-    }
-    if (context->header_remained_len == 0 && context->body_remained_len == -1) {
-        char c;
-        int read_len;
-        while ((read_len = bufferevent_read(bev, &c, 1))) {
-            if (isdigit(c)) {
-                context->data.push_back(c);
-            } else if (c == '\001') {
-                context->data.push_back(c);
-                auto start = context->data.begin() + EXPECT_HEADER_LEN;
-                auto end = context->data.end();
-                context->body_remained_len = std::stoi(std::string(start, end));
-                break;
-            }
-        }
-    }
-    if (context->body_remained_len > 0) {
-        const int BUFFER_SIZE = 1024;
-        char buf[BUFFER_SIZE];
-        int read_len = bufferevent_read(bev, buf, std::min(BUFFER_SIZE, context->body_remained_len));
-        context->body_remained_len -= read_len;
-        context->data.insert(context->data.end(), buf, buf + read_len);
-        if (context->body_remained_len == 0) {
-            //TODO: process message
-            context->reset();
-        }
-    }
- }
-    ***/
+void Worker::bevOnWrite(bufferevent *bev, void *arg) {
+}
 
 
 Worker::~Worker() {
@@ -95,31 +67,43 @@ Worker::~Worker() {
         delete context;
 }
 
-void Worker::registerConnection(evutil_socket_t fd, short what, void *arg) {
+void Worker::onMasterCommand(evutil_socket_t fd, short what, void *arg) {
     Worker *worker = static_cast<Worker *>(arg);
+    char c;
+    read(fd, &c, 1);
+    auto cmd = static_cast<kMasterCmd>(c);
+    if (cmd == kMasterCmd::kNewConnection)
+        worker->registerConnection(fd);
+    else if (cmd == kMasterCmd::kStop)
+        worker->stop();
+}
 
-    std::unique_lock<std::mutex> lock(worker->conn_mutex_);
-    while (!worker->new_conn_fds_.empty()) {
-        evutil_socket_t conn_fd = worker->new_conn_fds_.front();
-        worker->new_conn_fds_.pop();
-        worker->conn_fds_.push_back(fd);
+void Worker::registerConnection(int fd) {
+    Logger::getLogger()->info(TAG, "connection received " + std::to_string(fd));
 
+    std::__1::unique_lock<std::__1::mutex> lock(conn_mutex_);
+    while (!new_conn_fds_.empty()) {
+        evutil_socket_t conn_fd = new_conn_fds_.front();
+        new_conn_fds_.pop();
         evutil_make_socket_nonblocking(conn_fd);
-        bufferevent *read_bev = bufferevent_socket_new(worker->event_base_, conn_fd, BEV_OPT_CLOSE_ON_FREE);
-        bufferevent_setwatermark(read_bev, EV_READ, 1/*FIXME*/, 0 /* unlimited */);
-        bufferevent_setcb(read_bev, readBuffer, NULL /* FIXME: writeBuffer */, NULL /*Fixme: process error*/,
-                          worker->bufferContextAlloc());
-        bufferevent_enable(read_bev, EV_READ | EV_WRITE);
+        bufferevent *client_bev = bufferevent_socket_new(event_base_, conn_fd, BEV_OPT_CLOSE_ON_FREE);
+        bufferevent_setwatermark(client_bev, EV_READ, 0/*FIXME*/, 0 /* unlimited */);
+        bufferevent_setcb(client_bev,
+                          bevOnRead, bevOnWrite, bevOnError,
+                          bufferContextAlloc()/*arg passed to callback*/);
+        bufferevent_enable(client_bev, EV_READ | EV_WRITE);
+
+        conn_bevs_.push_back(client_bev);
     }
 }
 
 Worker::Worker(evutil_socket_t notify_conn_fd) :
-        notify_conn_fd_(notify_conn_fd),
-        dbconn_( ConnectionFactory::getInstance()->createConnnection()),
-        processor_(dbconn_) {
+        master_cmd_fd_(notify_conn_fd),
+        dbconn_(ConnectionFactory::getInstance()->createConnnection()),
+        dispatcher_(dbconn_) {
     event_base_ = event_base_new();
-    event *new_conn_event = event_new(event_base_, notify_conn_fd_, EV_READ | EV_PERSIST, registerConnection, this);
-    event_add(new_conn_event, NULL);
+    event_master_cmd_ = event_new(event_base_, master_cmd_fd_, EV_READ | EV_PERSIST, onMasterCommand, this);
+    event_add(event_master_cmd_, NULL);
 }
 
 void Worker::start() {
@@ -127,6 +111,7 @@ void Worker::start() {
 }
 
 void Worker::stop() {
+    event_base_loopbreak(event_base_);
     worker_thread_->join();//Fixme: this doesn't work
 }
 
@@ -136,7 +121,7 @@ void Worker::putConnection(evutil_socket_t sfd) {
     lock.unlock();
 }
 
-void Worker::processInput(const char *buf, const int len, BufferContext *context) {
+void Worker::processInput(bufferevent *bev, const char *buf, const int len, BufferContext *context) {
     int processed = 0;
     while (processed < len) {
         if (context->header_cur_pos < EXPECT_HEADER_LEN) {
@@ -167,16 +152,15 @@ void Worker::processInput(const char *buf, const int len, BufferContext *context
             context->data.push_back(buf[processed++]);
             if (--context->body_remained_len == 0) {
                 std::string s(context->data.begin(), context->data.end());
-                std::shared_ptr<Fix42::Message> result = processor_.accept(
+                auto results = dispatcher_.dispatch(
                         std::make_shared<Fix42::Message>(s)
                 );
-                if (result) {
-                    //TODO: send back result
+                for(const auto result: results){
+                    auto str_result = result->toString();
+                    bufferevent_write(bev, str_result.c_str(), str_result.size());
                 }
                 context->reset();
             }
         }
     }
 }
-
-
