@@ -10,9 +10,9 @@
 #include <vector>
 #include <memory>
 
-class MessageDispacher {
+class MessageDispatcher {
 public:
-    MessageDispacher(ConnectionFactory::ConnectionPtr dbconn) : dbconn_(dbconn) { }
+    MessageDispatcher(ConnectionFactory::ConnectionPtr dbconn) : dbconn_(dbconn) { }
 
     Fix42::MessagePtr accept(const Fix42::MessagePtr message);
 

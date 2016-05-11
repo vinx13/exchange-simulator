@@ -15,14 +15,14 @@
 #include <cppconn/statement.h>
 #include <cppconn/connection.h>
 
-class OrderBook {
+class OrderHandler {
 public:
     static const double MAX_PRICE_DELTA;
     static const double MAX_ORDER_VOLUMN;
 
-    OrderBook(std::string symbol, APIUtil::ConnPtr conn);
+    OrderHandler(std::string symbol, APIUtil::ConnPtr conn);
 
-    ~OrderBook();
+    ~OrderHandler();
 
     void put(const Quote &quote);
 

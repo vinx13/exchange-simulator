@@ -14,8 +14,8 @@ void Config::initGlobalConfig(const std::string &filename) {
 template<class T>
 static void readInto(const std::string &name, const std::map<std::string, std::string> &src, T &dest) {
     if (src.find(name) != src.end()) {
-        std::istringstream sin(src.at(name));
-        sin >> dest;
+        std::istringstream in(src.at(name));
+        in >> dest;
     }
 }
 
@@ -42,8 +42,7 @@ Config::Config(const std::string &filename) {
     READ_OPTION(db_user)
     READ_OPTION(db_password)
     READ_OPTION(db_database)
-    READ_OPTION(access_log)
-    READ_OPTION(error_log)
+    READ_OPTION(logfile)
 #undef READ_OPTION
 
     db_config.host = db_host;

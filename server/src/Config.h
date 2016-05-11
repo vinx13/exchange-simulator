@@ -7,7 +7,7 @@
 #include <netinet/in.h>
 #include <memory>
 
-struct DbConfig{
+struct DbConfig {
     std::string host, user, password, database;
 };
 
@@ -18,13 +18,14 @@ struct Config {
     int max_clients;
     bool debug;
 
-    std::string access_log;
-    std::string error_log;
+    std::string logfile;
 
     DbConfig db_config;
 
-    static std::shared_ptr<Config> getGlobalConfig(){return instance__;}
+    static std::shared_ptr<Config> getGlobalConfig() { return instance__; }
+
     static void initGlobalConfig(const std::string &filename);
+
 private:
     static std::shared_ptr<Config> instance__;
 

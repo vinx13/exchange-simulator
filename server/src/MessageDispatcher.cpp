@@ -1,8 +1,8 @@
-#include "MessageDispacher.h"
+#include "MessageDispatcher.h"
 #include "OrderBook.h"
 
 
-Fix42::MessagePtr MessageDispacher::accept(const Fix42::MessagePtr message) {
+Fix42::MessagePtr MessageDispatcher::accept(const Fix42::MessagePtr message) {
 
     auto type = message->getType();
 
@@ -15,7 +15,7 @@ Fix42::MessagePtr MessageDispacher::accept(const Fix42::MessagePtr message) {
     }
 }
 
-Fix42::MessagePtr MessageDispacher::onSingleOrder(const Fix42::MessagePtr message) {
+Fix42::MessagePtr MessageDispatcher::onSingleOrder(const Fix42::MessagePtr message) {
     //TODO: catch exception when fields do not exist
     OrderBook order_book(message->getField<Fix42::kFieldName::kSymbol>()->getValue(), dbconn_);
     Quote quote(message);
@@ -29,21 +29,21 @@ Fix42::MessagePtr MessageDispacher::onSingleOrder(const Fix42::MessagePtr messag
     }
 }
 
-Fix42::MessagePtr MessageDispacher::createMsgOrdAc(const Quote &quote) {
+Fix42::MessagePtr MessageDispatcher::createMsgOrdAc(const Quote &quote) {
     auto message = std::make_shared<Fix42::Message>();
     addBasicFields(quote, message);
     message->setField<Fix42::kFieldName::kOrdStatus>(0);//new
     return message;
 }
 
-Fix42::MessagePtr MessageDispacher::createMsgOrdReject(const Quote &quote) {
+Fix42::MessagePtr MessageDispatcher::createMsgOrdReject(const Quote &quote) {
     auto message = std::make_shared<Fix42::Message>();
     addBasicFields(quote, message);
     message->setField<Fix42::kFieldName::kOrdStatus>(8);//reject
     return message;
 }
 
-void MessageDispacher::addBasicFields(const Quote &quote, std::shared_ptr<Fix42::Message> &message) const {
+void MessageDispatcher::addBasicFields(const Quote &quote, std::shared_ptr<Fix42::Message> &message) const {
     message->setType(Fix42::kMessageType::kExecutionReport);
     message->setField<Fix42::kFieldName::kClOrdID>(quote.client_order_id);
     message->setField<Fix42::kFieldName
