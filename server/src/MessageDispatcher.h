@@ -9,6 +9,7 @@
 #include <memory>
 #include <string>
 #include <map>
+#include <vector>
 
 class MessageDispatcher {
 public:
@@ -18,7 +19,7 @@ public:
 
     MessageDispatcher(ConnectionFactory::ConnectionPtr dbconn) : dbconn_(dbconn) { initHandlerMap(); }
 
-    Fix42::MessagePtr dispatch(const Fix42::MessagePtr message);
+    std::vector<Fix42::MessagePtr> dispatch(const Fix42::MessagePtr message);
 
 private:
     std::map<Fix42::kMessageType, std::shared_ptr<MessageHandler>> handler_map_;

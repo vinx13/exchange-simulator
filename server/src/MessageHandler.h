@@ -4,7 +4,7 @@
 
 class MessageHandler {
 public:
-    virtual Fix42::MessagePtr accept(const Fix42::MessagePtr message) = 0;
+    virtual std::vector<Fix42::MessagePtr> accept(const Fix42::MessagePtr message) = 0;
 
     ~MessageHandler() { }
 };

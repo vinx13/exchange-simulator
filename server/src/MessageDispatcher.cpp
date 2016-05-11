@@ -1,12 +1,12 @@
 #include "MessageDispatcher.h"
-#include "OrderHandler.h"
+#include "OrderBook.h"
 #include "Logger.h"
 
 #include <sstream>
 
 const std::string MessageDispatcher::TAG("MessageDispatcher");
 
-Fix42::MessagePtr MessageDispatcher::dispatch(const Fix42::MessagePtr message) {
+std::vector<Fix42::MessagePtr> MessageDispatcher::dispatch(const Fix42::MessagePtr message) {
 
     auto type = message->getType();
 
@@ -15,7 +15,7 @@ Fix42::MessagePtr MessageDispatcher::dispatch(const Fix42::MessagePtr message) {
     }
 
     logUnknown(type);
-    return Fix42::MessagePtr();
+    return std::vector<Fix42::MessagePtr>();
 }
 
 void MessageDispatcher::logUnknown(const Fix42::kMessageType &type) const {
@@ -25,7 +25,7 @@ void MessageDispatcher::logUnknown(const Fix42::kMessageType &type) const {
 }
 
 void MessageDispatcher::initHandlerMap() {
-    auto order_handler = std::make_shared<OrderHandler>(dbconn_);
+    auto order_handler = std::make_shared<OrderBook>(dbconn_);
     handler_map_[Fix42::kMessageType::kNewOrderSingle] = order_handler;
     handler_map_[Fix42::kMessageType::kNewOrderList] = order_handler;
 }
