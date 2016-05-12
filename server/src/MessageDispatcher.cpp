@@ -1,6 +1,9 @@
 #include "MessageDispatcher.h"
 #include "OrderBook.h"
 #include "Logger.h"
+#include "OrderHandler.h"
+#include "QuoteRequestHandler.h"
+#include "SecurityStatusHandler.h"
 
 #include <sstream>
 
@@ -25,7 +28,16 @@ void MessageDispatcher::logUnknown(const Fix42::kMessageType &type) const {
 }
 
 void MessageDispatcher::initHandlerMap() {
-    auto order_handler = std::make_shared<OrderBook>(dbconn_);
-    handler_map_[Fix42::kMessageType::kNewOrderSingle] = order_handler;
-    handler_map_[Fix42::kMessageType::kNewOrderList] = order_handler;
+#define DECLARE_HANDLER_MAP(MESSAGE_TYPE, HANDLER_TYPE) \
+    do{ \
+        handler_map_[Fix42::kMessageType::MESSAGE_TYPE] = std::make_shared<HANDLER_TYPE>(dbconn_); \
+    } while(0);
+
+
+    DECLARE_HANDLER_MAP(kNewOrderList, OrderHandler)
+    DECLARE_HANDLER_MAP(kNewOrderSingle, OrderHandler)
+    DECLARE_HANDLER_MAP(kQuoteRequest, QuoteRequestHandler)
+    DECLARE_HANDLER_MAP(kSecurityStatus, SecurityStatusHandler)
+
+#undef DECLARE_HANDLER_MAP
 }

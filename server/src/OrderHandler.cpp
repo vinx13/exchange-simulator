@@ -17,7 +17,7 @@ std::vector<Fix42::MessagePtr> OrderHandler::accept(const Fix42::MessagePtr mess
 }
 
 void OrderHandler::handleSingleOrder(const Quote &quote, std::vector<Fix42::MessagePtr> &results) {
-    OrderBook orderBook(quote.symbol, dbconn_);
+    OrderBook orderBook(quote.symbol, api_);
     if (!orderBook.isValid(quote)) {
         results.push_back(createMsgReject(quote));
         return;

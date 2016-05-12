@@ -4,7 +4,7 @@
 const double OrderBook::MAX_PRICE_DELTA = 0.1;
 const double OrderBook::MAX_ORDER_VOLUMN = 0.05;
 
-OrderBook::OrderBook(std::string symbol,APIUtil::ConnPtr conn) : conn_(conn), api_(conn) {
+OrderBook::OrderBook(std::string symbol, APIUtil api) : api_(api) {
     loadStatus();
 }
 

@@ -21,9 +21,9 @@ CREATE TABLE `ExchangeSimulator`.`Security` (
     `symbol` TEXT NOT NULL ,
     `price` INT NOT NULL ,
     `prev_close` INT NOT NULL ,
-    `mkt_cap` BIGINT NOT NULL,
-    `trading` BOOLEAN NOT NULL DEFAULT FALSE,
-    `lock` BOOLEAN NOT NULL DEFAULT FALSE,
+    `mkt_cap` BIGINT NOT NULL ,
+    `trading_status` INT NOT NULL ,
+    `lock` BOOLEAN NOT NULL DEFAULT FALSE ,
     PRIMARY KEY (`symbol`(8))
     ) ENGINE = InnoDB;
 
@@ -52,3 +52,4 @@ CREATE TABLE `ExchangeSimulator`.`OrderArchive` (
     ) ENGINE = InnoDB;
 
 SOURCE procedures.sql
+SOURCE sampledata.sql

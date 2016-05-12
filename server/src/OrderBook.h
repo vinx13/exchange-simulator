@@ -21,7 +21,7 @@ public:
     static const double MAX_PRICE_DELTA;
     static const double MAX_ORDER_VOLUMN;
 
-    OrderBook(std::string symbol, APIUtil::ConnPtr conn);
+    OrderBook(std::string symbol, APIUtil api);
 
     ~OrderBook();
 
@@ -39,7 +39,7 @@ private:
     std::string symbol_;
     std::vector<Quote> quotes_;
     SecurityStatus security_status_;
-    APIUtil::ConnPtr conn_;
+    //APIUtil::ConnPtr conn_;
     APIUtil api_;
 
     bool has_lock_ = false;

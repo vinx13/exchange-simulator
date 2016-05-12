@@ -15,6 +15,8 @@ struct Quote {
     int price, quantity;
     kTradeSide side;
 
+    Quote()= default;
+
     Quote(const Fix42::MessagePtr message) {
         fromContainer(message, *this);
     }

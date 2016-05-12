@@ -29,9 +29,11 @@ public:
 
     bool securityQuery(const std::string &symbol, SecurityStatus &result);
 
-    bool securtiyStartTrading(const std::string &symbol);
+    bool securityStartTrading(const std::string &symbol);
 
     bool securityStopTrading(const std::string &symbol);
+
+    bool securityUpdateTradingStatus(const std::string &symbol, const kSecurityTradingStatus status);
 
     bool orderbookPut(const Quote &quote);
 
@@ -44,6 +46,8 @@ public:
     bool systemStatusIsRunning(bool &result);
 
     bool tradeRecordPut(const TradeRecord &record);
+
+    bool orderBookQuery(const std::string &symbol, kTradeSide side, bool query_highest, Quote &result);
 
 private:
     StmtPtr getStmt();

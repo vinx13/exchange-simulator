@@ -3,18 +3,37 @@ CREATE PROCEDURE orderbook_put
 BEGIN
     INSERT INTO `OrderBook`(`symbol`, `client`, `client_order_id`, `side`, `price`, `quantity`, `ori_quantity`)
     VALUES(symbol_, client_, client_order_id_, side_, price_, quantity_, quantity_);
+    INSERT INTO `OrderBook`(`symbol`, `client`, `client_order_id`, `side`, `price`, `quantity`, `ori_quantity`)
+    VALUES(symbol_, client_, client_order_id_, side_, price_, quantity_, quantity_);
 END//
 
 
 CREATE PROCEDURE orderbook_query
 (IN symbol_ TEXT, IN side_ CHAR(1), IN price_ INT)
 BEGIN
-    SELECT `id`, `symbol`, `client`, `client_order_id`, `price`, `quantity`
+    SELECT `id`, `symbol`, `client`, `client_order_id`, `price`, `quantity`,`trading_status`
     FROM `OrderBook`
     WHERE `symbol` = symbol_ AND `side` = side_ AND `price` = price_
     ORDER BY `time` DESC;
 END//
 
+CREATE PROCEDURE orderbook_query_highest(IN symbol_ TEXT, IN side_ CHAR(1))
+BEGIN
+    SELECT `id`, `symbol`, `client`, `client_order_id`, `price`, `quantity`,`trading_status`
+    FROM `OrderBook`
+    WHERE `symbol` = symbol_ AND `side` = side_
+    ORDER BY `price` DESC, `time` DESC
+    LIMIT 1;
+END//
+
+CREATE PROCEDURE orderbook_query_lowest(IN symbol_ TEXT, IN side_ CHAR(1))
+BEGIN
+    SELECT `id`, `symbol`, `client`, `client_order_id`, `price`, `quantity`,`trading_status`
+    FROM `OrderBook`
+    WHERE `symbol` = symbol_ AND `side` = side_
+    ORDER BY `price`, `time` DESC
+    LIMIT 1;
+END//
 
 CREATE PROCEDURE orderbook_query_match(IN symbol_ TEXT)
 BEGIN

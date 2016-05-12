@@ -13,14 +13,13 @@
 class OrderHandler : public MessageHandler {
 public:
 
-    OrderHandler(APIUtil::ConnPtr conn) : dbconn_(conn) { }
+    OrderHandler(APIUtil::ConnPtr conn) : MessageHandler(conn) { }
 
     virtual std::vector<Fix42::MessagePtr> accept(const Fix42::MessagePtr message) override;
 
     void handleSingleOrder(const Quote &quote, std::vector<Fix42::MessagePtr> &results);
 
 private:
-    APIUtil::ConnPtr dbconn_;
 
     Fix42::MessagePtr createMsgAccept(const Quote &quote);
 

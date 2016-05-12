@@ -40,12 +40,7 @@ BEGIN
     SELECT * from `Security` WHERE `symbol` = symbol_;
 END//
 
-CREATE PROCEDURE security_stop_trading(IN symbol_ TEXT)
+CREATE PROCEDURE security_update_trading_status(IN symbol_ TEXT, IN status_ INT)
 BEGIN
-    UPDATE `Security` SET `trading` = FALSE WHERE `symbol` = symbol_;
-END//
-
-CREATE PROCEDURE security_start_trading(IN symbol_ TEXT)
-BEGIN
-    UPDATE `Security` SET `trading` = TRUE WHERE `symbol` = symbol_;
+    UPDATE `Security` SET `trading_status` = status_ WHERE `symbol` = symbol_;
 END//
