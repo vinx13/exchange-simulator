@@ -8,8 +8,11 @@ set(SERVER_SOURCE_FILES
         server/src/Master.cpp
         server/src/Worker.cpp
         server/src/MessageDispatcher.cpp
-        server/src/ConnectionFactory.cpp
         server/src/OrderHandler.cpp
+        server/src/QuoteRequestHandler.cpp
+        server/src/SecurityStatusHandler.cpp
+        server/src/ConnectionFactory.cpp
+        server/src/OrderBook.cpp
         server/src/Config.cpp
         server/src/APIUtil.cpp
         server/src/Logger.cpp
