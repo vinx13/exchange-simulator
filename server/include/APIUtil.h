@@ -29,10 +29,6 @@ public:
 
     bool securityQuery(const std::string &symbol, SecurityStatus &result);
 
-    bool securityStartTrading(const std::string &symbol);
-
-    bool securityStopTrading(const std::string &symbol);
-
     bool securityUpdateTradingStatus(const std::string &symbol, const kSecurityTradingStatus status);
 
     bool orderbookPut(const Quote &quote);
@@ -42,8 +38,6 @@ public:
     bool orderbookQueryMatch(const std::string &symbol, ResultSetPtr &result);
 
     bool orderbookUpdate(const int quote_id, const int quantity);
-
-    bool systemStatusIsRunning(bool &result);
 
     bool tradeRecordPut(const TradeRecord &record);
 

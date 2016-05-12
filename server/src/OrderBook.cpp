@@ -37,14 +37,10 @@ std::shared_ptr<std::vector<TradeRecord>> OrderBook::execute() {
     static const std::shared_ptr<std::vector<TradeRecord>> NONE;
 
     bool is_running = false;
-    api_.systemStatusIsRunning(is_running);
-    if (!is_running) {
-        return NONE;
-    }
 
     lock();
     loadStatus();
-    if (!security_status_.trading) {
+    if (security_status_.trading_status != kSecurityTradingStatus::kOpen) {
         return NONE;
     }
     auto records = doTrade();

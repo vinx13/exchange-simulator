@@ -1,10 +1,6 @@
 DROP DATABASE IF EXISTS ExchangeSimulator;
 CREATE DATABASE ExchangeSimulator;
 
-CREATE TABLE `ExchangeSimulator`.`SystemStatus` (
-    `running` BOOLEAN NOT NULL
-    ) ENGINE = InnoDB;
-
 CREATE TABLE `ExchangeSimulator`.`OrderBook` (
     `id` INT NOT NULL AUTO_INCREMENT,
     `symbol` TEXT NOT NULL ,

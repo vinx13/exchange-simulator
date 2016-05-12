@@ -103,19 +103,6 @@ bool APIUtil::orderbookUpdate(const int quote_id, const int quantity) {
     return execute(s.str());
 }
 
-bool APIUtil::systemStatusIsRunning(bool &result) {
-    auto stmt = getStmt();
-    ResultSetPtr results;
-
-    if (!execute(stmt, "CALL systemstatus_is_running(@result)") ||
-        !executeQuery(stmt, "SELECT @result AS _result", results)) {
-        return false;
-    }
-    while (results->next())
-        result = results->getBoolean("_result");
-    return true;
-}
-
 bool APIUtil::tradeRecordPut(const TradeRecord &record) {
     std::ostringstream s;
     s << "CALL traderecord_put("
@@ -125,20 +112,6 @@ bool APIUtil::tradeRecordPut(const TradeRecord &record) {
     << record.quantity << ")";
     return execute(s.str());
 }
-
-
-/*
-bool APIUtil::securityStartTrading(const std::string &symbol) {
-    std::ostringstream s;
-    s << "CALL security_start_trading('" << symbol << "')";
-    return execute(s.str());
-}
-
-bool APIUtil::securityStopTrading(const std::string &symbol) {
-    std::ostringstream s;
-    s << "CALL security_stop_trading('" << symbol << "')";
-    return execute(s.str());
-}*/
 
 bool APIUtil::checkConnection() {
     if (conn_->isClosed()) {
