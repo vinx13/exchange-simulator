@@ -14,6 +14,9 @@
 #include <event2/buffer.h>
 #include <event2/bufferevent.h>
 
+enum class kWorkerSignal : char {
+    kNewConnection = 'n', kStop = 'q'
+};
 
 struct BufferContext;
 
@@ -23,7 +26,7 @@ public:
 
     static void workerMain(Worker *worker);
 
-    static void onMasterCommand(evutil_socket_t fd, short what, void *arg);
+    static void onOwnerSignal(evutil_socket_t fd, short what, void *arg);
 
     static void bevOnRead(bufferevent *bev, void *arg);
 
@@ -32,7 +35,7 @@ public:
     static void bevOnError(bufferevent *bev, short what, void *arg);
 
 
-    Worker(evutil_socket_t notify_conn_fd);
+    Worker();
 
     ~Worker();
 
@@ -51,16 +54,24 @@ private:
     std::vector<bufferevent *> conn_bevs_;
     std::queue<evutil_socket_t> new_conn_fds_;
     std::mutex conn_mutex_;
-    evutil_socket_t master_cmd_fd_;
+    evutil_socket_t worker_thread_fd_, worker_owner_fd_;
     event_base *event_base_;
     std::vector<BufferContext *> buffer_contexts_;
     ConnectionFactory::ConnectionPtr dbconn_;
     MessageDispatcher dispatcher_;
     event *event_master_cmd_;
 
+    int sendSignal(const kWorkerSignal command);
+
+    void notifyStop();
+
+    void notifyNewConn();
+
     void registerConnection(int fd);
 
     void deregisterConnection(bufferevent *bev);
+
+    void stopEventLoop();
 };
 
 

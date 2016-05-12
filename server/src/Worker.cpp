@@ -5,7 +5,8 @@
 #include <string>
 
 static const std::string EXPECT_HEADER = "8=FIX.4.2\0019=";
-static const int EXPECT_HEADER_LEN = 13;/*EXPECT_HEADER.length();*/
+static const int EXPECT_HEADER_LEN = 13;
+/*EXPECT_HEADER.length();*/
 
 const std::string Worker::TAG("Worker");
 
@@ -30,7 +31,6 @@ BufferContext *Worker::bufferContextAlloc() {
     return context;
 }
 
-
 void Worker::workerMain(Worker *worker) {
     event_base_dispatch(worker->event_base_);
 }
@@ -39,7 +39,6 @@ void Worker::deregisterConnection(bufferevent *bev) {
     bufferevent_free(bev);
 
 }
-
 
 void Worker::bevOnError(bufferevent *bev, short what, void *arg) {
     Logger::getLogger()->error(TAG, "bufferevent error code " + std::to_string(what));
@@ -67,16 +66,19 @@ Worker::~Worker() {
         delete context;
 }
 
-void Worker::onMasterCommand(evutil_socket_t fd, short what, void *arg) {
+void Worker::onOwnerSignal(evutil_socket_t fd, short what, void *arg) {
     Worker *worker = static_cast<Worker *>(arg);
     char c;
     read(fd, &c, 1);
-    auto cmd = static_cast<kMasterCmd>(c);
-    if (cmd == kMasterCmd::kNewConnection)
+    auto cmd = static_cast<kWorkerSignal>(c);
+    if (cmd == kWorkerSignal::kNewConnection)
         worker->registerConnection(fd);
-    else if (cmd == kMasterCmd::kStop)
-        worker->stop();
+    else if (cmd == kWorkerSignal::kStop) {
+        worker->stopEventLoop();
+    }
 }
+
+void Worker::stopEventLoop() { event_base_loopbreak(event_base_); }
 
 void Worker::registerConnection(int fd) {
     Logger::getLogger()->info(TAG, "connection received " + std::to_string(fd));
@@ -97,12 +99,20 @@ void Worker::registerConnection(int fd) {
     }
 }
 
-Worker::Worker(evutil_socket_t notify_conn_fd) :
-        master_cmd_fd_(notify_conn_fd),
+Worker::Worker() :
         dbconn_(ConnectionFactory::getInstance()->createConnnection()),
         dispatcher_(dbconn_) {
+
+    int fds[2];
+    if (socketpair(AF_UNIX, SOCK_STREAM, 0, fds) == -1) {
+        Logger::getLogger()->error(TAG, "failure in socket pair");
+    } else {
+        worker_owner_fd_ = fds[0];
+        worker_thread_fd_ = fds[1];
+    }
+
     event_base_ = event_base_new();
-    event_master_cmd_ = event_new(event_base_, master_cmd_fd_, EV_READ | EV_PERSIST, onMasterCommand, this);
+    event_master_cmd_ = event_new(event_base_, worker_thread_fd_, EV_READ | EV_PERSIST, onOwnerSignal, this);
     event_add(event_master_cmd_, NULL);
 }
 
@@ -111,14 +121,16 @@ void Worker::start() {
 }
 
 void Worker::stop() {
-    event_base_loopbreak(event_base_);
-    worker_thread_->join();//Fixme: this doesn't work
+    notifyStop();
+    worker_thread_->join();
 }
 
 void Worker::putConnection(evutil_socket_t sfd) {
-    std::unique_lock<std::mutex> lock(conn_mutex_);
-    new_conn_fds_.push(sfd);
-    lock.unlock();
+    {//synchronized
+        std::unique_lock<std::mutex> lock(conn_mutex_);
+        new_conn_fds_.push(sfd);
+    }
+    notifyNewConn();
 }
 
 void Worker::processInput(bufferevent *bev, const char *buf, const int len, BufferContext *context) {
@@ -155,7 +167,7 @@ void Worker::processInput(bufferevent *bev, const char *buf, const int len, Buff
                 auto results = dispatcher_.dispatch(
                         std::make_shared<Fix42::Message>(s)
                 );
-                for(const auto result: results){
+                for (const auto result: results) {
                     auto str_result = result->toString();
                     bufferevent_write(bev, str_result.c_str(), str_result.size());
                 }
@@ -163,4 +175,22 @@ void Worker::processInput(bufferevent *bev, const char *buf, const int len, Buff
             }
         }
     }
+}
+
+void Worker::notifyStop() {
+    if (sendSignal(kWorkerSignal::kStop) == -1) {
+        Logger::getLogger()->error(TAG, "failure in dispatching new connections");
+        exit(EXIT_FAILURE);
+    }
+}
+
+void Worker::notifyNewConn() {
+    if (sendSignal(kWorkerSignal::kNewConnection) == -1) {
+        Logger::getLogger()->error(TAG, "failure in dispatching new connections");
+    }
+}
+
+int Worker::sendSignal(const kWorkerSignal command) {
+    char cmd = static_cast<char>(command);
+    return write(worker_owner_fd_, &cmd, 1);
 }

@@ -10,17 +10,13 @@
 #include <event2/event.h>
 #include <event2/listener.h>
 
-enum class kMasterCmd : char {
-    kNewConnection = 'n', kStop = 'q'
-};
-
 class Master {
 public:
     static const std::string TAG;
 
     static std::shared_ptr<Master> getInstance();
 
-    static void sigintHandler(int signum);
+    static void signalHandler(int signum);
 
     static void acceptConnection(
             struct evconnlistener *listener,
@@ -28,8 +24,6 @@ public:
             struct sockaddr *addr,
             int len, void *ptr
     );
-
-    Master();
 
     ~Master();
 
@@ -41,19 +35,15 @@ public:
 private:
     static std::shared_ptr<Master> instance__;
 
-
-    std::vector<std::shared_ptr<Worker> > workers_;
-    std::vector<evutil_socket_t> worker_fds_;
+    std::vector<std::shared_ptr<Worker>> workers_;
     event_base *event_base_ = nullptr;
     evconnlistener *evconn_listener_ = nullptr;
 
     int next_worker_;
 
-    int sendCmd(const int worker_fd, const kMasterCmd command);
+    Master();
 
-    void sendStopCmd();
 
-    void sendNewConnCmd(const int worker_id);
 };
 
 

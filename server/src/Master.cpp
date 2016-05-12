@@ -3,6 +3,7 @@
 
 #include <arpa/inet.h>
 #include <cstring>
+#include <sstream>
 
 const std::string Master::TAG("Master");
 
@@ -14,17 +15,20 @@ std::shared_ptr<Master> Master::getInstance() {
     return instance__;
 }
 
-void Master::sigintHandler(int signum) {
-    if (signum == SIGABRT) {
-        Logger::getLogger()->info(TAG, "Signal int received.");
-        Master::getInstance()->stop();
-        Master::getInstance().reset(nullptr);
-        exit(EXIT_SUCCESS);
-    }
+void Master::signalHandler(int signum) {
+    std::ostringstream s;
+    s << "Signal " << signum << " received.";
+    Logger::getLogger()->info(TAG, s.str());
+
+    Master::getInstance()->stop();
+    Master::getInstance().reset();
+    exit(EXIT_SUCCESS);
+
 }
 
 Master::Master() {
-    signal(SIGINT, sigintHandler);
+    signal(SIGINT, signalHandler);
+    signal(SIGTERM, signalHandler);
 
     auto config = Config::getGlobalConfig();
 
@@ -35,13 +39,7 @@ Master::Master() {
     event_base_ = event_base_new();
 
     for (int i = 0; i < config->num_workers; i++) {
-        int fds[2];
-        if (socketpair(AF_UNIX, SOCK_STREAM, 0, fds) == -1) {
-            Logger::getLogger()->error(TAG, "failure in socket pair");
-        } else {
-            worker_fds_.push_back(fds[0]);
-            workers_.push_back(std::make_shared<Worker>(fds[1]));
-        }
+        workers_.push_back(std::make_shared<Worker>());
     }
 
     sockaddr_in sin;
@@ -66,8 +64,6 @@ void Master::acceptConnection(struct evconnlistener *listener,
         master->next_worker_ = 0;
 
     master->workers_[worker_id]->putConnection(sfd);
-    master->sendNewConnCmd(0);
-    master->sendNewConnCmd(worker_id);
 }
 
 
@@ -80,33 +76,19 @@ Master::~Master() {
 }
 
 void Master::start() {
+    Logger::getLogger()->info(TAG, "started");
     for (auto &worker:workers_)
         worker->start();
     event_base_dispatch(event_base_);
 }
 
 void Master::stop() {
-    sendStopCmd();
+    for (auto &worker:workers_) {
+        worker->stop();
+    }
     event_base_loopbreak(event_base_);
     evconnlistener_free(evconn_listener_);
     evconn_listener_ = nullptr;
+    Logger::getLogger()->info(TAG, "stopped");
 }
 
-void Master::sendStopCmd() {
-    for (const auto &worker_fd:worker_fds_) {
-        if (sendCmd(worker_fd, kMasterCmd::kStop) == -1) {
-            Logger::getLogger()->error(TAG, "failure in dispatching new connections");
-        }
-    }
-}
-
-void Master::sendNewConnCmd(const int worker_id) {
-    if (sendCmd(worker_id, kMasterCmd::kNewConnection) == -1) {
-        Logger::getLogger()->error(TAG, "failure in dispatching new connections");
-    }
-}
-
-int Master::sendCmd(const int worker_fd, const kMasterCmd command) {
-    char cmd = static_cast<char>(command);
-    return write(worker_fd, &cmd, 1);
-}
