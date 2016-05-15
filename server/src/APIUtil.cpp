@@ -49,6 +49,21 @@ bool APIUtil::securityQuery(const std::string &symbol, SecurityStatus &result) {
     return true;
 }
 
+bool APIUtil::securityQueryAll(std::vector<SecurityStatus> &result){
+    std::ostringstream s;
+    s << "CALL security_query_all()";
+    auto stmt = getStmt();
+    ResultSetPtr results;
+    if(!executeQuery(stmt, s.str(), results)){
+        return false;
+    }
+    while(results->next()){
+        result.emplace_back(results);
+    }
+    stmt->getMoreResults();
+    return true;
+}
+
 bool APIUtil::securityUpdateTradingStatus(const std::string &symbol, const kSecurityTradingStatus status) {
     std::ostringstream s;
     s << "CALL security_update_trading_status('"

@@ -29,6 +29,8 @@ public:
 
     bool securityQuery(const std::string &symbol, SecurityStatus &result);
 
+    bool securityQueryAll(std::vector<SecurityStatus> &result);
+
     bool securityUpdateTradingStatus(const std::string &symbol, const kSecurityTradingStatus status);
 
     bool orderbookPut(const Quote &quote);

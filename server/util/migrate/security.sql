@@ -40,6 +40,11 @@ BEGIN
     SELECT * from `Security` WHERE `symbol` = symbol_;
 END//
 
+CREATE PROCEDURE security_query_all()
+BEGIN
+    SELECT * from `Security`;
+END//
+
 CREATE PROCEDURE security_update_trading_status(IN symbol_ TEXT, IN status_ INT)
 BEGIN
     UPDATE `Security` SET `trading_status` = status_ WHERE `symbol` = symbol_;
