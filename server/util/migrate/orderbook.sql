@@ -11,7 +11,7 @@ END//
 CREATE PROCEDURE orderbook_query
 (IN symbol_ TEXT, IN side_ CHAR(1), IN price_ INT)
 BEGIN
-    SELECT `id`, `symbol`, `client`, `client_order_id`, `price`, `quantity`,`trading_status`
+    SELECT `id`, `symbol`, `client`, `client_order_id`, `price`, `quantity`
     FROM `OrderBook`
     WHERE `symbol` = symbol_ AND `side` = side_ AND `price` = price_
     ORDER BY `time` DESC;
@@ -19,7 +19,7 @@ END//
 
 CREATE PROCEDURE orderbook_query_highest(IN symbol_ TEXT, IN side_ CHAR(1))
 BEGIN
-    SELECT `id`, `symbol`, `client`, `client_order_id`, `price`, `quantity`,`trading_status`
+    SELECT `id`, `symbol`, `client`, `client_order_id`, `price`, `quantity`
     FROM `OrderBook`
     WHERE `symbol` = symbol_ AND `side` = side_
     ORDER BY `price` DESC, `time` DESC
@@ -28,7 +28,7 @@ END//
 
 CREATE PROCEDURE orderbook_query_lowest(IN symbol_ TEXT, IN side_ CHAR(1))
 BEGIN
-    SELECT `id`, `symbol`, `client`, `client_order_id`, `price`, `quantity`,`trading_status`
+    SELECT `id`, `symbol`, `client`, `client_order_id`, `price`, `quantity`
     FROM `OrderBook`
     WHERE `symbol` = symbol_ AND `side` = side_
     ORDER BY `price`, `time` DESC

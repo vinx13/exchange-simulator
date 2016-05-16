@@ -7,10 +7,12 @@ std::vector<Fix42::MessagePtr> OrderHandler::accept(const Fix42::MessagePtr mess
 
     if (type == Fix42::kMessageType::kNewOrderSingle) {
         Quote quote(message);
+        handleSingleOrder(quote, results);
     } else if (type == Fix42::kMessageType::kNewOrderList) {
         const auto &orders = message->getRepeatGroup(Fix42::kFieldName::kNoOrders)->getUnits();
         for (const auto order: orders) {
             Quote quote(order);
+            handleSingleOrder(quote, results);
         }
     }
     return results;

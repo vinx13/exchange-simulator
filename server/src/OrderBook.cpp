@@ -36,8 +36,6 @@ void OrderBook::unlock() {
 std::shared_ptr<std::vector<TradeRecord>> OrderBook::execute() {
     static const std::shared_ptr<std::vector<TradeRecord>> NONE;
 
-    bool is_running = false;
-
     lock();
     loadStatus();
     if (security_status_.trading_status != kSecurityTradingStatus::kOpen) {

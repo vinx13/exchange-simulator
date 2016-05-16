@@ -5,7 +5,7 @@
 #include <string>
 
 static const std::string EXPECT_HEADER = "8=FIX.4.2\0019=";
-static const int EXPECT_HEADER_LEN = 13;
+static const int EXPECT_HEADER_LEN = 12;
 /*EXPECT_HEADER.length();*/
 
 const std::string Worker::TAG("Worker");
@@ -52,7 +52,7 @@ void Worker::bevOnRead(bufferevent *bev, void *arg) {
     const int BUF_SIZE = 1024;
     char buf[BUF_SIZE];
     int len = bufferevent_read(bev, buf, BUF_SIZE);
-    Logger::getLogger()->debug(TAG, "Worker: message received. " + std::string(buf, buf + len));
+    Logger::getLogger()->debug(TAG, "message received. " + std::string(buf, buf + len));
     context->worker->processInput(bev, buf, len, context);
     //bufferevent_write(bev, "hello", 5); //FIXME
 }

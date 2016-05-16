@@ -4,6 +4,7 @@
 #include "OrderHandler.h"
 #include "QuoteRequestHandler.h"
 #include "SecurityStatusHandler.h"
+#include "SecurityDefinitionHandler"
 
 #include <sstream>
 
@@ -38,6 +39,7 @@ void MessageDispatcher::initHandlerMap() {
     DECLARE_HANDLER_MAP(kNewOrderSingle, OrderHandler)
     DECLARE_HANDLER_MAP(kQuoteRequest, QuoteRequestHandler)
     DECLARE_HANDLER_MAP(kSecurityStatus, SecurityStatusHandler)
+    DECLARE_HANDLER_MAP(kSecurityDefinitionRequest, SecurityDefinitionHandler)
 
 #undef DECLARE_HANDLER_MAP
 }
