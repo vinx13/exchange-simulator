@@ -10,3 +10,9 @@ mkdir build && cd build
 cmake ../
 make
 ```
+
+##Database
+MySQL 5.7
+
+##Platform
+Currently only *nix is supported.
