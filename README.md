@@ -10,3 +10,13 @@ mkdir build && cd build
 cmake ../
 make
 ```
+
+##Database
+MySQL 5.7  
+To initiate local database, run:
+```
+./server/util/migrate/migrate.sh DB_USER DB_PASSWORD
+```
+
+##Platform
+Currently only *nix is supported.
