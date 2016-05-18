@@ -45,6 +45,10 @@ public:
 
     bool orderBookQuery(const std::string &symbol, kTradeSide side, bool query_highest, Quote &result);
 
+    bool orderBookClientQuery(const std::string client, const std::string client_order_id, Quote &result);
+
+    bool orderArchiveClientQuery(const std::string client, const std::string client_order_id, Quote &result);
+
 private:
     StmtPtr getStmt();
 

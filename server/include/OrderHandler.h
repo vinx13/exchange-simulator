@@ -19,6 +19,8 @@ public:
 
     void handleSingleOrder(const Quote &quote, std::vector<Fix42::MessagePtr> &results);
 
+    std::vector<Fix42::Message> handleSingleRequest(const Fix42::MessagePtr message);
+
 private:
 
     Fix42::MessagePtr createMsgAccept(const Quote &quote);

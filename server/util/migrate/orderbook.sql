@@ -3,7 +3,7 @@ CREATE PROCEDURE orderbook_put
 BEGIN
     INSERT INTO `OrderBook`(`symbol`, `client`, `client_order_id`, `side`, `price`, `quantity`, `ori_quantity`)
     VALUES(symbol_, client_, client_order_id_, side_, price_, quantity_, quantity_);
-    INSERT INTO `OrderBook`(`symbol`, `client`, `client_order_id`, `side`, `price`, `quantity`, `ori_quantity`)
+    INSERT INTO `OrderArchive`(`symbol`, `client`, `client_order_id`, `side`, `price`, `quantity`, `ori_quantity`)
     VALUES(symbol_, client_, client_order_id_, side_, price_, quantity_, quantity_);
 END//
 
@@ -15,6 +15,24 @@ BEGIN
     FROM `OrderBook`
     WHERE `symbol` = symbol_ AND `side` = side_ AND `price` = price_
     ORDER BY `time` DESC;
+END//
+
+CREATE PROCEDURE orderbook_client_query
+(IN client_ TEXT, IN client_order_id_ TEXT)
+BEGIN
+    SELECT `id`, `symbol`, `client`, `client_order_id`, `price`, `quantity`
+    FROM `OrderBook`
+    WHERE `client` = client_ AND `client_order_id` = client_order_id_
+    LIMIT 1;
+END//
+
+CREATE PROCEDURE orderarchive_client_query
+(IN client_ TEXT, IN client_order_id_ TEXT)
+BEGIN
+    SELECT `id`, `symbol`, `client`, `client_order_id`, `price`, `quantity`
+    FROM `OrderArchive`
+    WHERE `client` = client_ AND `client_order_id` = client_order_id_
+    LIMIT 1;
 END//
 
 CREATE PROCEDURE orderbook_query_highest(IN symbol_ TEXT, IN side_ CHAR(1))

@@ -1,5 +1,4 @@
 #include "APIUtil.h"
-#include "TradeRecord.h"
 #include "Logger.h"
 
 #include <sstream>
@@ -49,15 +48,15 @@ bool APIUtil::securityQuery(const std::string &symbol, SecurityStatus &result) {
     return true;
 }
 
-bool APIUtil::securityQueryAll(std::vector<SecurityStatus> &result){
+bool APIUtil::securityQueryAll(std::vector<SecurityStatus> &result) {
     std::ostringstream s;
     s << "CALL security_query_all()";
     auto stmt = getStmt();
     ResultSetPtr results;
-    if(!executeQuery(stmt, s.str(), results)){
+    if (!executeQuery(stmt, s.str(), results)) {
         return false;
     }
-    while(results->next()){
+    while (results->next()) {
         result.emplace_back(results);
     }
     stmt->getMoreResults();
@@ -116,6 +115,40 @@ bool APIUtil::orderbookUpdate(const int quote_id, const int quantity) {
     std::ostringstream s;
     s << "CALL orderbook_update(" << quote_id << "," << quantity << ")";
     return execute(s.str());
+}
+
+bool APIUtil::orderBookClientQuery(const std::string client, const std::string client_order_id, Quote &result) {
+    std::ostringstream s;
+    s << "CALL orderbook_client_query('"
+    << client << "','" << client_order_id << "')";
+    auto stmt = getStmt();
+    ResultSetPtr results;
+
+    if (!executeQuery(stmt, s.str(), results)) {
+        return false;
+    }
+    while (results->next()) {
+        result = Quote(results);
+    }
+    stmt->getMoreResults();
+    return true;
+}
+
+bool APIUtil::orderArchiveClientQuery(const std::string client, const std::string client_order_id, Quote &result) {
+    std::ostringstream s;
+    s << "CALL orderarchive_client_query('"
+    << client << "','" << client_order_id << "')";
+    auto stmt = getStmt();
+    ResultSetPtr results;
+
+    if (!executeQuery(stmt, s.str(), results)) {
+        return false;
+    }
+    while (results->next()) {
+        result = Quote(results);
+    }
+    stmt->getMoreResults();
+    return true;
 }
 
 bool APIUtil::tradeRecordPut(const TradeRecord &record) {
