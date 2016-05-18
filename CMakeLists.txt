@@ -9,15 +9,14 @@ set(SERVER_SOURCE_FILES
         server/src/Worker.cpp
         server/src/MessageDispatcher.cpp
         server/src/OrderHandler.cpp
-        server/src/QuoteRequestHandler.cpp
         server/src/SecurityStatusHandler.cpp
         server/src/ConnectionFactory.cpp
         server/src/OrderBook.cpp
         server/src/Config.cpp
         server/src/APIUtil.cpp
         server/src/Logger.cpp
-        server/src/QuoteRequestHandler.cpp
         server/src/SecurityDefinitionHandler.cpp
+        server/src/QuoteRequestHandler.cpp
         )
 
 set(CLIENT_SOURCE_FILES

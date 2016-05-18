@@ -31,12 +31,12 @@ void OrderHandler::handleSingleOrder(const Quote &quote, std::vector<Fix42::Mess
     orderBook.execute();
 }
 
-std::vector<Fix42::Message> OrderHandler::handleSingleRequest(const Fix42::MessagePtr message) {
+std::vector<Fix42::MessagePtr> OrderHandler::handleSingleRequest(const Fix42::MessagePtr message) {
     std::string client = message->getField<Fix42::kFieldName::kClientID>()->getValue(),
             client_order_id = message->getField<Fix42::kFieldName::kClOrdID>()->getValue();
     Quote original, current;
 
-    std::vector<Fix42::MessagePtr>> results;
+    std::vector<Fix42::MessagePtr> results;
 
     if (!api_.orderBookClientQuery(client, client_order_id, current) ||
         !api_.orderArchiveClientQuery(client, client_order_id, original)) {

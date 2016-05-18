@@ -7,6 +7,7 @@
 #include "SecurityStatus.h"
 
 #include <string>
+#include <vector>
 #include <memory>
 #include <cppconn/statement.h>
 #include <cppconn/connection.h>

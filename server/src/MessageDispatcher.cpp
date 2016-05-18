@@ -38,6 +38,7 @@ void MessageDispatcher::initHandlerMap() {
     DECLARE_HANDLER_MAP(kNewOrderList, OrderHandler)
     DECLARE_HANDLER_MAP(kNewOrderSingle, OrderHandler)
     DECLARE_HANDLER_MAP(kQuoteRequest, QuoteRequestHandler)
+    DECLARE_HANDLER_MAP(kOrderStatusRequest, OrderHandler)
     DECLARE_HANDLER_MAP(kSecurityStatus, SecurityStatusHandler)
     DECLARE_HANDLER_MAP(kSecurityDefinitionRequest, SecurityDefinitionHandler)
 
