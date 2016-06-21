@@ -83,7 +83,7 @@ void Worker::stopEventLoop() { event_base_loopbreak(event_base_); }
 void Worker::registerConnection(int fd) {
     Logger::getLogger()->info(TAG, "connection received " + std::to_string(fd));
 
-    std::__1::unique_lock<std::__1::mutex> lock(conn_mutex_);
+    std::unique_lock<std::mutex> lock(conn_mutex_);
     while (!new_conn_fds_.empty()) {
         evutil_socket_t conn_fd = new_conn_fds_.front();
         new_conn_fds_.pop();

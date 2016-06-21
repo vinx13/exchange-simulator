@@ -4,11 +4,13 @@
 const double OrderBook::MAX_PRICE_DELTA = 0.1;
 const double OrderBook::MAX_ORDER_VOLUMN = 0.05;
 
-OrderBook::OrderBook(std::string symbol, APIUtil api) : api_(api) {
+OrderBook::OrderBook(std::string symbol, APIUtil api) : api_(api) , symbol_(symbol) {
     loadStatus();
 }
 
-void OrderBook::loadStatus() { api_.securityQuery(symbol_, security_status_); }
+void OrderBook::loadStatus() {
+    api_.securityQuery(symbol_, security_status_);
+}
 
 OrderBook::~OrderBook() {
     if (has_lock_) {
@@ -64,7 +66,7 @@ std::shared_ptr<std::vector<TradeRecord>> OrderBook::doTrade() {
             auto &sell = sell_quotes.front();
             TradeRecord record;
 
-            int qty = std::__1::min(buy.quantity, sell.quantity);
+            int qty = std::min(buy.quantity, sell.quantity);
             buy.quantity -= qty;
             sell.quantity -= qty;
 
