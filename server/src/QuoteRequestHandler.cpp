@@ -28,5 +28,6 @@ std::vector<Fix42::MessagePtr> QuoteRequestHandler::accept(const Fix42::MessageP
         }
     }
     result->setRepeatGroup(Fix42::kFieldName::kNoRelatedSym, quote_list);
+    results.push_back(result);
     return results;
 }

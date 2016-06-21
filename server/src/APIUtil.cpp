@@ -39,11 +39,13 @@ bool APIUtil::securityQuery(const std::string &symbol, SecurityStatus &result) {
     ResultSetPtr results;
     auto stmt = getStmt();
     s << "CALL security_query('" << symbol << "')";
-    if (!executeQuery(stmt, s.str(), results)) {
+    if (!executeQuery(stmt, s.str(), results) || cleanIfEmpty(stmt, results)) { //no results are available
         return false;
     }
-    while (results->next())
+
+    do {
         result = SecurityStatus(results);
+    } while (results->next());
     stmt->getMoreResults();
     return true;
 }
@@ -53,12 +55,12 @@ bool APIUtil::securityQueryAll(std::vector<SecurityStatus> &result) {
     s << "CALL security_query_all()";
     auto stmt = getStmt();
     ResultSetPtr results;
-    if (!executeQuery(stmt, s.str(), results)) {
+    if (!executeQuery(stmt, s.str(), results) || cleanIfEmpty(stmt, results)) {
         return false;
     }
-    while (results->next()) {
+    do {
         result.emplace_back(results);
-    }
+    } while (results->next());
     stmt->getMoreResults();
     return true;
 }
@@ -96,11 +98,12 @@ bool APIUtil::orderBookQuery(const std::string &symbol, kTradeSide side, bool qu
     << (query_highest ? "highest" : "lowest")
     << "('" << symbol << "','"
     << static_cast<char>(side) << "')";
-    if (!executeQuery(stmt, s.str(), results)) {
+    if (!executeQuery(stmt, s.str(), results) || cleanIfEmpty(stmt, results)) {
         return false;
     }
-    while (results->next())
+    do {
         result = Quote(results);
+    } while (results->next());
     stmt->getMoreResults();
     return true;
 }
@@ -124,12 +127,12 @@ bool APIUtil::orderBookClientQuery(const std::string client, const std::string c
     auto stmt = getStmt();
     ResultSetPtr results;
 
-    if (!executeQuery(stmt, s.str(), results)) {
+    if (!executeQuery(stmt, s.str(), results) || cleanIfEmpty(stmt, results)) {
         return false;
     }
-    while (results->next()) {
+    do {
         result = Quote(results);
-    }
+    } while (results->next());
     stmt->getMoreResults();
     return true;
 }
@@ -141,12 +144,13 @@ bool APIUtil::orderArchiveClientQuery(const std::string client, const std::strin
     auto stmt = getStmt();
     ResultSetPtr results;
 
-    if (!executeQuery(stmt, s.str(), results)) {
+    if (!executeQuery(stmt, s.str(), results) || cleanIfEmpty(stmt, results)) {
         return false;
     }
-    while (results->next()) {
+
+    do {
         result = Quote(results);
-    }
+    } while (results->next());
     stmt->getMoreResults();
     return true;
 }
@@ -207,6 +211,15 @@ bool APIUtil::executeQuery(APIUtil::StmtPtr stmt, const std::string &s, std::sha
         return false;
     }
     return true;
+}
+
+bool APIUtil::cleanIfEmpty(StmtPtr stmt, ResultSetPtr results) {
+    //clean empty result set and return if the result set is empty
+    if (!results->next()) {
+        stmt->getMoreResults();
+        return true;
+    }
+    return false;
 }
 
 void APIUtil::logError(const sql::SQLException &e, const std::string &query_string) {
