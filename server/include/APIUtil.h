@@ -65,6 +65,8 @@ private:
 
     void logError(const sql::SQLException &e, const std::string &query_string);
 
+    bool cleanIfEmpty(StmtPtr stmt, ResultSetPtr results);
+
     ConnPtr conn_;
 };
 

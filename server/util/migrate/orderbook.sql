@@ -1,10 +1,10 @@
 CREATE PROCEDURE orderbook_put
 (IN symbol_ TEXT, IN client_ TEXT, IN client_order_id_ TEXT, IN side_ CHAR(1), IN price_ INT, IN quantity_ INT)
 BEGIN
-    INSERT INTO `OrderBook`(`symbol`, `client`, `client_order_id`, `side`, `price`, `quantity`, `ori_quantity`)
-    VALUES(symbol_, client_, client_order_id_, side_, price_, quantity_, quantity_);
-    INSERT INTO `OrderArchive`(`symbol`, `client`, `client_order_id`, `side`, `price`, `quantity`, `ori_quantity`)
-    VALUES(symbol_, client_, client_order_id_, side_, price_, quantity_, quantity_);
+    INSERT INTO `OrderBook`(`symbol`, `client`, `client_order_id`, `side`, `price`, `quantity`)
+    VALUES(symbol_, client_, client_order_id_, side_, price_, quantity_);
+    INSERT INTO `OrderArchive`(`symbol`, `client`, `client_order_id`, `side`, `price`, `quantity`)
+    VALUES(symbol_, client_, client_order_id_, side_, price_, quantity_);
 END//
 
 
