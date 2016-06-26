@@ -56,6 +56,6 @@ target_include_directories(testFix42 PUBLIC fix4.2 PUBLIC gtest/include)
 target_include_directories(server PUBLIC server/include fix4.2/)
 target_include_directories(client PUBLIC fix4.2/)
 
-target_link_libraries(testFix42 gtestmain gtest fix42)
-target_link_libraries(server fix42 libevent_core.a mysqlcppconn.a)
+target_link_libraries(testFix42 gtestmain gtest fix42 pthread)
+target_link_libraries(server fix42 event_core mysqlcppconn)
 target_link_libraries(client fix42)
