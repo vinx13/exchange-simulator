@@ -1,4 +1,5 @@
 #include "Client.h"
+#include <cstring>
 #include <fstream>
 #include <iostream>
 #include <unistd.h>
@@ -10,7 +11,7 @@ Client::Client(const std::string &config) {
 void Client::readConfig(const std::string &config) {
     std::ifstream fin(config);
     std::string key;
-    while(fin >> key) {
+    while (fin >> key) {
         if (key == "host") {
             fin >> host_;
         } else if (key == "port") {
@@ -30,6 +31,8 @@ void Client::connect() {
         std::cout << "cannot connect to server";
         exit(EXIT_FAILURE);
     }
+    //int flags = fcntl(server_fd_, F_GETFL, 0);
+    //fcntl(server_fd_, F_SETFL, flags | O_NONBLOCK);
 }
 
 std::string Client::getCmdBody(const std::string &cmd) const {
@@ -47,8 +50,8 @@ Fix42::MessagePtr Client::read() {
     int len;
     if ((len = ::read(server_fd_, buf, BUF_SIZE)) > 0) {
         try {
-            return std::make_shared<Fix42::Message>(std::string(buf, buf+len));
-        }catch (const Fix42::MessageParserError &e){
+            return std::make_shared<Fix42::Message>(std::string(buf, buf + len));
+        } catch (const Fix42::MessageParserError &e) {
             std::cout << e.what() << std::endl;
         }
     }

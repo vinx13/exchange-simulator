@@ -14,10 +14,10 @@ void UserClient::start() {
 void UserClient::doMainLoop() {
     printUsage();
     while (true) {
-        std::__1::string cmd;
-        std::getline(std::__1::cin, cmd);
+        std::string cmd;
+        std::getline(std::cin, cmd);
         if (!isvalid(cmd)) {
-            std::__1::cout << "Invalid command." << std::__1::endl;
+            std::cout << "Invalid command." << std::endl;
             printUsage();
         } else {
             handleCmd(cmd);
@@ -102,6 +102,11 @@ void UserClient::onQueryQuote(const std::string &cmdbody) {
     auto response = read();
 
     auto &quote_list = response->getRepeatGroup(Fix42::kFieldName::kNoRelatedSym)->getUnits();
+
+    if (quote_list.empty()) {
+        std::cout << "No available quotes." << std::endl;
+        return;
+    }
     for (auto &quote_fields: quote_list) {
         std::cout
         << "price -- " << quote_fields->getField<Fix42::kFieldName::kPrice>()->getValue()
@@ -117,7 +122,7 @@ void UserClient::onBuy(const std::string &cmdbody) {
     send(message);
     auto response = read();
 
-    std::cout << (isOrderAccepted(response) ? "Order accepted." : "Order rejected.");
+    std::cout << (isOrderAccepted(response) ? "Order accepted." : "Order rejected.") << std::endl;
 
 }
 
@@ -128,7 +133,7 @@ void UserClient::onSell(const std::string &cmdbody) {
     send(message);
     auto response = read();
 
-    std::cout << (isOrderAccepted(response) ? "Order accepted." : "Order rejected.");
+    std::cout << (isOrderAccepted(response) ? "Order accepted." : "Order rejected.") << std::endl;
 }
 
 Fix42::MessagePtr UserClient::generateOrder(const std::string &cmdbody) {
@@ -170,8 +175,15 @@ void UserClient::onQueryList() {
     auto response = read();
 
     auto security_list = response->getRepeatGroup(Fix42::kFieldName::kNoRelatedSym)->getUnits();
+    std::cout << "symbol        price" << std::endl;
+
+    if (security_list.empty()) {
+        std::cout << "No available securities." << std::endl;
+        return;
+    }
     for (const auto &security_fields : security_list) {
-        std::cout << security_fields->getField<Fix42::kFieldName::kSymbol>()->getValue() << std::endl;
+        std::cout << security_fields->getField<Fix42::kFieldName::kSymbol>()->getValue() << "    "
+        << security_fields->getField<Fix42::kFieldName::kPrice>()->getValue() << std::endl;
     }
 }
 
