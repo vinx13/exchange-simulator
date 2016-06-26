@@ -1,6 +1,7 @@
 #include "Master.h"
 #include "Logger.h"
 
+#include <signal.h>
 #include <arpa/inet.h>
 #include <cstring>
 #include <sstream>

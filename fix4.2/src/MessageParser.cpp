@@ -1,5 +1,5 @@
 #include "MessageParser.h"
-
+#include <algorithm>
 
 __FIX42_BEGIN
 

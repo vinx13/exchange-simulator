@@ -4,6 +4,7 @@
 
 #include "Config.h"
 
+#include <mutex>
 #include <memory>
 #include <cppconn/connection.h>
 #include <mysql_driver.h>

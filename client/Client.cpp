@@ -31,8 +31,6 @@ void Client::connect() {
         std::cout << "cannot connect to server";
         exit(EXIT_FAILURE);
     }
-    //int flags = fcntl(server_fd_, F_GETFL, 0);
-    //fcntl(server_fd_, F_SETFL, flags | O_NONBLOCK);
 }
 
 std::string Client::getCmdBody(const std::string &cmd) const {
