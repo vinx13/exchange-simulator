@@ -7,13 +7,12 @@
 #include <cppconn/resultset.h>
 
 enum class kSecurityTradingStatus : int {
-    kOpen = 0, kClose = 1, kHold = 2
+    kTrading = 0, kClose = 1, kHold = 2, kAuction = 3, kSpecialAuction = 4
 };
 
 struct SecurityStatus {
     std::string symbol;
     int price, prev_close, market_cap;
-    bool trading;
     kSecurityTradingStatus trading_status;
 
     SecurityStatus() = default;

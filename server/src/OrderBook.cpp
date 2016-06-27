@@ -1,21 +1,25 @@
 #include "OrderBook.h"
-#include "APIUtil.h"
 
 const double OrderBook::MAX_PRICE_DELTA = 0.1;
-const double OrderBook::MAX_ORDER_VOLUMN = 0.05;
+const double OrderBook::MAX_ORDER_VOLUMN = 0.2;
 
-OrderBook::OrderBook(std::string symbol, APIUtil api) : api_(api) , symbol_(symbol) {
-    loadStatus();
-}
-
-void OrderBook::loadStatus() {
-    api_.securityQuery(symbol_, security_status_);
+OrderBook::OrderBook(std::string symbol, APIUtil api) : api_(api), symbol_(symbol) {
+    reloadStatus();
 }
 
 OrderBook::~OrderBook() {
     if (has_lock_) {
         unlock();
     }
+}
+
+void OrderBook::reloadStatus() {
+    api_.securityQuery(symbol_, security_status_);
+}
+
+bool OrderBook::isOpenBidding() const {
+    reloadStatus();
+    return security_status_.trading_status != kSecurityTradingStatus::kHold;
 }
 
 void OrderBook::put(const Quote &quote) {
@@ -39,8 +43,8 @@ std::shared_ptr<std::vector<TradeRecord>> OrderBook::execute() {
     static const std::shared_ptr<std::vector<TradeRecord>> NONE;
 
     lock();
-    loadStatus();
-    if (security_status_.trading_status != kSecurityTradingStatus::kOpen) {
+    reloadStatus();
+    if (security_status_.trading_status != kSecurityTradingStatus::kTrading) {
         return NONE;
     }
     auto records = doTrade();
@@ -126,6 +130,8 @@ void OrderBook::updatePrice() {
 }
 
 bool OrderBook::isValid(const Quote &quote) const {
+    if (security_status_.trading_status == kSecurityTradingStatus::kSpecialAuction) return true;
+
     int prev = security_status_.prev_close;
     int delta = prev * MAX_PRICE_DELTA;
     if (quote.price < prev - delta || quote.price > prev + delta) {

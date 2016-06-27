@@ -35,6 +35,10 @@ public:
 
     bool isValid(const Quote &quote) const;
 
+    bool isOpenBidding() const;
+
+    void reloadStatus();
+
 private:
     std::string symbol_;
     std::vector<Quote> quotes_;
@@ -53,8 +57,6 @@ private:
     void updateQuote(const Quote &quote);
 
     void updatePrice();
-
-    void loadStatus();
 
     std::shared_ptr<std::vector<TradeRecord>> doTrade();
 };

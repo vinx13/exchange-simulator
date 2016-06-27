@@ -22,12 +22,20 @@ std::vector<Fix42::MessagePtr> OrderHandler::accept(const Fix42::MessagePtr mess
 
 void OrderHandler::handleSingleOrder(const Quote &quote, std::vector<Fix42::MessagePtr> &results) {
     OrderBook orderBook(quote.symbol, api_);
+
+    kSecurityTradingStatus tradingStatus = orderBook.getTradingStatus();
+
+    if(tradingStatus==kSecurityTradingStatus::kClose || tradingStatus==k){
+        results.push_back(createMsgAccept(quote));
+        return;
+    }
     if (!orderBook.isValid(quote)) {
         results.push_back(createMsgReject(quote));
         return;
     }
     orderBook.put(quote);
     results.push_back(createMsgAccept(quote));
+
     orderBook.execute();
 }
 
