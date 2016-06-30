@@ -1,7 +1,7 @@
 before_install:
   - sudo apt-get -qq update
   - sudo apt-get install -y libevent-2.0 libevent-core-2.0 bzr libboost-1.54-dev
-  - bzr branch lp:~mysql/mysql-connector-cpp/trunk
+  - bzr branch lp:~mysql/mysql-connector-cpp/trunk ./cppconnector
   - cd cppconnector
   - cmake . && sudo make install
 
