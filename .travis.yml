@@ -1,0 +1,17 @@
+before_install:
+  - sudo apt-get -qq update
+  - sudo apt-get install -y libevent-2.0 libevent-core-2.0 cmake bzr
+
+before_script:
+  - bzr branch lp:~mysql/mysql-connector-cpp/trunk ./cppconnector
+  - cd cppconnector
+  - cmake && make install
+
+install:
+  - mkdir build && cd build
+  - cmake ../
+  - make
+language: cpp
+compiler:
+  - clang
+  - g++
