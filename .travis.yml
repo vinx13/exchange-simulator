@@ -4,11 +4,12 @@ before_install:
   - bzr branch lp:~mysql/mysql-connector-cpp/trunk ./cppconnector
   - cd cppconnector
   - cmake . && sudo make install
+  - cd ..
 
 install:
   - mkdir build && cd build
   - cmake ../
-  - make
+  - make all
 language: cpp
 compiler:
   - clang
