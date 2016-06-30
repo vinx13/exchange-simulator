@@ -1,10 +1,6 @@
 before_install:
   - sudo apt-get -qq update
-  - sudo apt-get install -y libevent-2.0 libevent-core-2.0 bzr wget
-  - wget https://cmake.org/files/v3.5/cmake-3.5.2.tar.gz
-  - tar -zxvf cmake-3.5.2.tar.gz
-  - cd cmake-3.5.2
-  - ./configure && sudo make install
+  - sudo apt-get install -y libevent-2.0 libevent-core-2.0 bzr
   - bzr branch lp:~mysql/mysql-connector-cpp/trunk ./cppconnector
   - cd cppconnector
   - cmake && sudo make install
