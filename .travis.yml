@@ -11,7 +11,7 @@ install:
   - sudo make install
   - cd ..
   - sudo apt-get -qq update
-  - sudo apt-get install -y libevent-2.0 libevent-core-2.0 bzr libboost-dev software-properties-common 
+  - sudo apt-get install -y libevent-2.0 libevent-core-2.0 bzr libboost-dev software-properties-common libgtest-dev
   - cmake --version
   - bzr branch lp:~mysql/mysql-connector-cpp/trunk ./cppconnector
   - cd cppconnector
@@ -20,10 +20,13 @@ install:
 
   - if [ "$CXX" = "g++" ]; then export CXX="g++-4.8" CC="gcc-4.8"; fi
 
+
+
 script:
   - mkdir build && cd build
   - cmake ../
-  - make all
+  - make
+  - make test
 
 addons:
   apt:
