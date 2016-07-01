@@ -1,5 +1,5 @@
 # Exchange Simulator
-
+[![Build Status](https://travis-ci.org/vinx13/exchange-simulator.svg?branch=master)](https://travis-ci.org/vinx13/exchange-simulator)  
 ##Dependency
 - [libevent 2.0.22](http://libevent.org)
 - [mysql-connector-c++ 1.1.6](http://dev.mysql.com/downloads/connector/cpp/)
