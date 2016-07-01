@@ -38,4 +38,3 @@ compiler:
   - gcc 
 notifications:
   email: false
-sudo: false
