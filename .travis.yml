@@ -1,8 +1,16 @@
 before_install:
-  - sudo add-apt-repository --yes ppa:george-edison55/cmake-3.x
+  - sudo apt-get install build-essential
+  - wget http://www.cmake.org/files/v3.2/cmake-3.2.2.tar.gz
+  - tar xf cmake-3.2.2.tar.gz
+  - cd cmake-3.2.2
+  - ./configure
+  - make
+  - sudo apt-get install checkinstall
+  - sudo checkinstall
+  - sudo make install
+  - cd ..
   - sudo apt-get -qq update
-  - sudo apt-get install -y libevent-2.0 libevent-core-2.0 bzr libboost-dev software-properties-common cmake
-  - sudo apt-get upgrade cmake
+  - sudo apt-get install -y libevent-2.0 libevent-core-2.0 bzr libboost-dev software-properties-common 
   - cmake --version
   - bzr branch lp:~mysql/mysql-connector-cpp/trunk ./cppconnector
   - cd cppconnector
