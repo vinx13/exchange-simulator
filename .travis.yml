@@ -6,7 +6,7 @@ before_install:
   - ./configure
   - make
   - sudo apt-get install checkinstall
-  - sudo checkinstall
+  - sudo checkinstall -y
   - sudo make install
   - cd ..
   - sudo apt-get -qq update
