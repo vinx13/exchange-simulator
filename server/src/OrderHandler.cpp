@@ -23,9 +23,9 @@ std::vector<Fix42::MessagePtr> OrderHandler::accept(const Fix42::MessagePtr mess
 void OrderHandler::handleSingleOrder(const Quote &quote, std::vector<Fix42::MessagePtr> &results) {
     OrderBook orderBook(quote.symbol, api_);
 
-    kSecurityTradingStatus tradingStatus = orderBook.getTradingStatus();
+    orderBook.reloadStatus();
 
-    if(tradingStatus==kSecurityTradingStatus::kClose || tradingStatus==k){
+    if(!orderBook.isOpenBidding()){
         results.push_back(createMsgAccept(quote));
         return;
     }

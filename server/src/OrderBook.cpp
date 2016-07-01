@@ -18,7 +18,6 @@ void OrderBook::reloadStatus() {
 }
 
 bool OrderBook::isOpenBidding() const {
-    reloadStatus();
     return security_status_.trading_status != kSecurityTradingStatus::kHold;
 }
 

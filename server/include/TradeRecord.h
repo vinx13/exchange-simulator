@@ -3,7 +3,7 @@
 
 struct TradeRecord{
     int order_buy, order_sell, price, quantity;
-    /* TimeStamp time */
+    /* TimeStamp time */ //TODO
 };
 
 #endif //EXCHANGESIMULATOR_SERVER_TRADERECORD_H
