@@ -55,7 +55,7 @@ target_link_libraries(client fix42)
 
 find_package(GTest)
 
-if(GTest_FOUND)
+if(GTEST_FOUND)
 
     enable_testing()
 
