@@ -63,7 +63,7 @@ if(GTest_FOUND)
 
     include_directories(${GTEST_INCLUDE_DIRS})
     target_include_directories(testFix42 PUBLIC fix4.2/)
-    target_link_libraries(testFix42 ${GTEST_BOTH_LIBRARIES} fix42)
+    target_link_libraries(testFix42 ${GTEST_BOTH_LIBRARIES} fix42 pthread)
 
     add_test(testFix42 testFix42)
 
