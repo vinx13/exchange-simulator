@@ -54,6 +54,7 @@ include_directories(${GTEST_INCLUDE_DIRS})
 target_include_directories(fix42 PUBLIC fix4.2/include)
 target_include_directories(server PUBLIC server/include fix4.2/)
 target_include_directories(client PUBLIC fix4.2/)
+target_include_directories(testFix42 PUBLIC fix4.2/)
 
 target_link_libraries(testFix42 ${GTEST_BOTH_LIBRARIES} fix42)
 target_link_libraries(server fix42 event_core mysqlcppconn)
