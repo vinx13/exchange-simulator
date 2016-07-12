@@ -35,7 +35,7 @@ CREATE TABLE `ExchangeSimulator`.`TradeRecord` (
 
 
 CREATE TABLE `ExchangeSimulator`.`OrderArchive` (
-    `id` INT NOT NULL ,
+    `id` INT NOT NULl AUTO_INCREMENT ,
     `symbol` TEXT NOT NULL ,
     `client` TEXT NOT NULL ,
     `client_order_id` TEXT NOT NULL,

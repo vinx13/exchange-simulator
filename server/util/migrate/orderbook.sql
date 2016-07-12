@@ -46,7 +46,7 @@ END//
 
 CREATE PROCEDURE orderbook_query_lowest(IN symbol_ TEXT, IN side_ CHAR(1))
 BEGIN
-    SELECT `id`, `symbol`, `client`, `client_order_id`, `price`, `quantity`
+    SELECT `id`, `symbol`, `client`, `client_order_id`, `price`, `quantity`, `side`
     FROM `OrderBook`
     WHERE `symbol` = symbol_ AND `side` = side_
     ORDER BY `price`, `time` DESC

@@ -7,6 +7,7 @@
 #include "APIUtil.h"
 
 #include <vector>
+#include <memory>
 
 class QuoteRequestHandler : public MessageHandler {
 public:
@@ -16,6 +17,8 @@ public:
 
 private:
     void querySingle(const std::string &symbol, std::vector<Fix42::MessagePtr> &results);
+
+    void addToQuoteList(std::shared_ptr<Fix42::RepeatGroup> &quote_list, const Quote &quote) const;
 
 };
 
