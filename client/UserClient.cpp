@@ -1,7 +1,6 @@
 #include <iostream>
 #include <sstream>
 #include "UserClient.h"
-#include "Quote.h"
 
 UserClient::UserClient(const std::string &config) : Client(config) {
 }
@@ -110,7 +109,7 @@ void UserClient::onQueryQuote(const std::string &cmdbody) {
     }
     for (auto &quote_fields: quote_list) {
         std::cout
-            << "price -- " << Quote::toOriginalPrice(quote_fields->getField<Fix42::kFieldName::kPrice>()->getValue())
+            << "price -- " << quote_fields->getField<Fix42::kFieldName::kPrice>()->getValue()
             << "    side -- " << quote_fields->getField<Fix42::kFieldName::kSide>()->getValue()
             << "    quantity -- " << quote_fields->getField<Fix42::kFieldName::kOrderQty>()->getValue()
             << std::endl;
@@ -148,7 +147,7 @@ Fix42::MessagePtr UserClient::generateOrder(const std::string &cmdbody) {
     message->setField<Fix42::kFieldName::kClientID>(client_);
     message->setField<Fix42::kFieldName::kSymbol>(symbol);
     message->setField<Fix42::kFieldName::kClOrdID>(client_order_id);
-    message->setField<Fix42::kFieldName::kPrice>(Quote::toIntPrice(price));
+    message->setField<Fix42::kFieldName::kPrice>(price);
     message->setField<Fix42::kFieldName::kOrderQty>(quantity);
     return message;
 }
@@ -167,13 +166,17 @@ void UserClient::onQueryOrder(const std::string &cmdbody) {
     send(message);
     auto response = read();
 
-    std::cout << "symbol    price    side   quantity   excuted quantity";
-    std::cout << response->getField<Fix42::kFieldName::kSymbol>()->getValue();
-    std::cout << Quote::toOriginalPrice(response->getField<Fix42::kFieldName::kPrice>()->getValue());
-    std::cout << static_cast<char>(response->getField<Fix42::kFieldName::kSide>()->getValue());
-    std::cout << response->getField<Fix42::kFieldName::kOrderQty>()->getValue();
-    std::cout << response->getField<Fix42::kFieldName::kCumQty>()->getValue();
-
+    std::cout << "symbol    price    side   quantity   excuted quantity"  << std::endl;
+    if(response->contains(Fix42::kFieldName::kSymbol)) {
+        std::cout << response->getField<Fix42::kFieldName::kSymbol>()->getValue() << "       "
+        << response->getField<Fix42::kFieldName::kPrice>()->getValue() << "        "
+        << static_cast<char>(response->getField<Fix42::kFieldName::kSide>()->getValue()) << "      "
+        << response->getField<Fix42::kFieldName::kOrderQty>()->getValue() << "      "
+        << response->getField<Fix42::kFieldName::kCumQty>()->getValue() << "    "
+        << std::endl;
+    } else{
+        std::cout << "Order not found" << std::endl;
+    }
 }
 
 void UserClient::onQueryList() {
@@ -192,7 +195,7 @@ void UserClient::onQueryList() {
     }
     for (const auto &security_fields : security_list) {
         std::cout << security_fields->getField<Fix42::kFieldName::kSymbol>()->getValue() << "    "
-        << Quote::toOriginalPrice(security_fields->getField<Fix42::kFieldName::kPrice>()->getValue()) << std::endl;
+        << security_fields->getField<Fix42::kFieldName::kPrice>()->getValue() << std::endl;
     }
 }
 

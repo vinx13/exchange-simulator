@@ -47,7 +47,7 @@ add_executable(client ${CLIENT_SOURCE_FILES})
 
 target_include_directories(fix42 PUBLIC fix4.2/include)
 target_include_directories(server PUBLIC server/include fix4.2/)
-target_include_directories(client PUBLIC fix4.2/ server/include)
+target_include_directories(client PUBLIC fix4.2/)
 
 target_link_libraries(server fix42 event_core mysqlcppconn)
 target_link_libraries(client fix42)

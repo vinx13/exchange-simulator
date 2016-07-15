@@ -46,10 +46,12 @@ std::vector<Fix42::MessagePtr> OrderHandler::handleSingleRequest(const Fix42::Me
 
     std::vector<Fix42::MessagePtr> results;
 
+    auto response = std::make_shared<Fix42::Message>();
+    results.push_back(response);
+
     if (!api_.orderbookClientQuery(client, client_order_id, quote)) {
         return results;
     }
-    auto response = std::make_shared<Fix42::Message>();
     addBasicFields(quote, response);
 
     int executed_quantity = quote.ori_quantity - quote.quantity;
@@ -57,7 +59,6 @@ std::vector<Fix42::MessagePtr> OrderHandler::handleSingleRequest(const Fix42::Me
         quote.quantity == 0 ? '2' : '1'); //filled or partially filled
     response->setField<Fix42::kFieldName::kCumQty>(executed_quantity);
 
-    results.push_back(response);
     return results;
 }
 

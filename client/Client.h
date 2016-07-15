@@ -28,6 +28,10 @@ protected:
     void send(const Fix42::MessagePtr message);
 
     Fix42::MessagePtr read();
+
+    void writen(int fd, const char *src, int n);
+
+    void readn(int fd, char *dest, int n);
 };
 
 

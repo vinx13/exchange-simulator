@@ -1,5 +1,4 @@
 #include "Client.h"
-#include <cstring>
 #include <fstream>
 #include <iostream>
 #include <unistd.h>
@@ -39,19 +38,43 @@ std::string Client::getCmdBody(const std::string &cmd) const {
 
 void Client::send(const Fix42::MessagePtr message) {
     auto s = message->toString();
-    ::write(server_fd_, s.c_str(), s.size());
+    writen(server_fd_, s.c_str(), s.size());
 }
 
 Fix42::MessagePtr Client::read() {
     const int BUF_SIZE = 4096;
     char buf[BUF_SIZE];
-    int len;
-    if ((len = ::read(server_fd_, buf, BUF_SIZE)) > 0) {
-        try {
-            return std::make_shared<Fix42::Message>(std::string(buf, buf + len));
-        } catch (const Fix42::MessageParserError &e) {
-            std::cout << e.what() << std::endl;
-        }
+    int i = 0;
+
+    readn(server_fd_, buf + i, 12  /* length of header */);
+    i += 12;
+
+    do {
+        readn(server_fd_, buf + i, 1);
+    } while (buf[i++] != '\001');
+
+    int body_length = std::stoi(buf + 12);
+    readn(server_fd_, buf + i, body_length);
+    i+= body_length;
+    try {
+        return std::make_shared<Fix42::Message>(std::string(buf, buf + i));
+    } catch (const Fix42::MessageParserError &e) {
+        std::cout << e.what() << std::endl;
     }
     return Fix42::MessagePtr();
+}
+
+void Client::writen(int fd, const char *src, int n) {
+    while (n > 0) {
+        int len = ::write(fd, src, n);
+        n -= len;
+    }
+}
+
+void Client::readn(int fd, char *dest, int n) {
+    int i = 0;
+    while (i < n) {
+        int len = ::read(fd, dest + i, n - i);
+        i += len;
+    }
 }
