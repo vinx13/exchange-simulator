@@ -54,7 +54,7 @@ std::vector<Fix42::MessagePtr> OrderHandler::handleSingleRequest(const Fix42::Me
 
     int executed_quantity = quote.ori_quantity - quote.quantity;
     response->setField<Fix42::kFieldName::kOrdStatus>(
-        quote.quantity == 0 ? 2 : 1); //filled or partially filled
+        quote.quantity == 0 ? '2' : '1'); //filled or partially filled
     response->setField<Fix42::kFieldName::kCumQty>(executed_quantity);
 
     results.push_back(response);
