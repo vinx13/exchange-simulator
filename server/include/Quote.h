@@ -49,7 +49,7 @@ private:
         dest.side = static_cast<kTradeSide>(container->template getField<Fix42::kFieldName::kSide>()->getValue());
         dest.ori_quantity = dest.quantity = container->template getField<Fix42::kFieldName::kOrderQty>()->getValue();
         //stores it as an integer to avoid precision loss with floating number
-        dest.price = toIntPrice(container->template getField<Fix42::kFieldName::kPrice>()->getValue());
+        dest.price = container->template getField<Fix42::kFieldName::kPrice>()->getValue();
     }
 };
 

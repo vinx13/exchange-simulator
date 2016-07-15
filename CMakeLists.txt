@@ -47,7 +47,7 @@ add_executable(client ${CLIENT_SOURCE_FILES})
 
 target_include_directories(fix42 PUBLIC fix4.2/include)
 target_include_directories(server PUBLIC server/include fix4.2/)
-target_include_directories(client PUBLIC fix4.2/)
+target_include_directories(client PUBLIC fix4.2/ server/include)
 
 target_link_libraries(server fix42 event_core mysqlcppconn)
 target_link_libraries(client fix42)
@@ -60,7 +60,6 @@ if(GTEST_FOUND)
     enable_testing()
 
     add_executable(testFix42 ${TEST_FIX42_SOURCE_FILES})
-
     include_directories(${GTEST_INCLUDE_DIRS})
     target_include_directories(testFix42 PUBLIC fix4.2/)
     target_link_libraries(testFix42 ${GTEST_BOTH_LIBRARIES} fix42 pthread)

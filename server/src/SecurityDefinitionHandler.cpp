@@ -14,7 +14,7 @@ std::vector<Fix42::MessagePtr> SecurityDefinitionHandler::accept(const Fix42::Me
     for (const auto &security:securities) {
         auto unit = std::make_shared<Fix42::FieldValueContainer>();
         unit->setField<Fix42::kFieldName::kSymbol>(security.symbol);
-        unit->setField<Fix42::kFieldName::kPrice>(Quote::toOriginalPrice(security.price));
+        unit->setField<Fix42::kFieldName::kPrice>(security.price);
         security_list->addUnit(unit);
     }
 
