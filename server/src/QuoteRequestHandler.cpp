@@ -14,10 +14,11 @@ std::vector<Fix42::MessagePtr> QuoteRequestHandler::accept(const Fix42::MessageP
         std::string symbol = request->getField<Fix42::kFieldName::kSymbol>()->getValue();
         Quote quotes[2]; //0->buy, 1->sell
 
-        for(int i = 0; i < 2; i++){
-            if(api_.orderBookQuery(symbol, kTradeSide::kBuy, false, quotes[i]))
-                addToQuoteList(quote_list, quotes[i]);
-        }
+        if(api_.orderBookQuery(symbol, kTradeSide::kBuy, false, quotes[0]))
+            addToQuoteList(quote_list, quotes[0]);
+
+        if(api_.orderBookQuery(symbol, kTradeSide::kSell, true, quotes[1]))
+            addToQuoteList(quote_list, quotes[1]);
     }
     result->setRepeatGroup(Fix42::kFieldName::kNoRelatedSym, quote_list);
     results.push_back(result);

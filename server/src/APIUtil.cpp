@@ -95,9 +95,9 @@ bool APIUtil::orderBookQuery(const std::string &symbol, kTradeSide side, bool qu
     auto stmt = getStmt();
     ResultSetPtr results;
     s << "CALL orderbook_query_"
-    << (query_highest ? "highest" : "lowest")
-    << "('" << symbol << "','"
-    << static_cast<char>(side) << "')";
+        << (query_highest ? "highest" : "lowest")
+        << "('" << symbol << "','"
+        << static_cast<char>(side) << "')";
     if (!executeQuery(stmt, s.str(), results) || cleanIfEmpty(stmt, results)) {
         return false;
     }
@@ -120,7 +120,7 @@ bool APIUtil::orderbookUpdate(const int quote_id, const int quantity) {
     return execute(s.str());
 }
 
-bool APIUtil::orderBookClientQuery(const std::string client, const std::string client_order_id, Quote &result) {
+bool APIUtil::orderbookClientQuery(const std::string client, const std::string client_order_id, Quote &result) {
     std::ostringstream s;
     s << "CALL orderbook_client_query('"
     << client << "','" << client_order_id << "')";
@@ -136,7 +136,7 @@ bool APIUtil::orderBookClientQuery(const std::string client, const std::string c
     stmt->getMoreResults();
     return true;
 }
-
+/*
 bool APIUtil::orderArchiveClientQuery(const std::string client, const std::string client_order_id, Quote &result) {
     std::ostringstream s;
     s << "CALL orderarchive_client_query('"
@@ -154,6 +154,7 @@ bool APIUtil::orderArchiveClientQuery(const std::string client, const std::strin
     stmt->getMoreResults();
     return true;
 }
+*/
 
 bool APIUtil::tradeRecordPut(const TradeRecord &record) {
     std::ostringstream s;

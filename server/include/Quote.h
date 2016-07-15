@@ -12,7 +12,7 @@ enum class kTradeSide : char {
 struct Quote {
     int id = -1; //assigned by system
     std::string symbol, client, client_order_id;
-    int price, quantity;
+    int price, ori_quantity, quantity;
     kTradeSide side;
 
     Quote()= default;
@@ -31,6 +31,7 @@ struct Quote {
         client = res->getString("client");
         client_order_id = res->getString("client_order_id");
         price = res->getInt("price");
+        ori_quantity = res->getInt("ori_quantity");
         quantity = res->getInt("quantity");
         side = static_cast<kTradeSide>(res->getString("side")[0]);
     }
@@ -46,7 +47,7 @@ private:
         dest.client = container->template getField<Fix42::kFieldName::kClientID>()->getValue();
         dest.client_order_id = container->template getField<Fix42::kFieldName::kClOrdID>()->getValue();
         dest.side = static_cast<kTradeSide>(container->template getField<Fix42::kFieldName::kSide>()->getValue());
-        dest.quantity = container->template getField<Fix42::kFieldName::kOrderQty>()->getValue();
+        dest.ori_quantity = dest.quantity = container->template getField<Fix42::kFieldName::kOrderQty>()->getValue();
         //stores it as an integer to avoid precision loss with floating number
         dest.price = toIntPrice(container->template getField<Fix42::kFieldName::kPrice>()->getValue());
     }

@@ -8,6 +8,7 @@ CREATE TABLE `ExchangeSimulator`.`OrderBook` (
     `client_order_id` TEXT NOT NULL,
     `side` CHAR(1) NOT NULL ,
     `price` INT NOT NULL ,
+    `ori_quantity` INT NOT NULL,
     `quantity` INT NOT NULL ,
     `time` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     PRIMARY KEY (`id`)
@@ -33,19 +34,6 @@ CREATE TABLE `ExchangeSimulator`.`TradeRecord` (
     PRIMARY KEY (`id`)
     ) ENGINE = InnoDB;
 
-
-CREATE TABLE `ExchangeSimulator`.`OrderArchive` (
-    `id` INT NOT NULl AUTO_INCREMENT ,
-    `symbol` TEXT NOT NULL ,
-    `client` TEXT NOT NULL ,
-    `client_order_id` TEXT NOT NULL,
-    `side` CHAR(1) NOT NULL ,
-    `price` INT NOT NULL ,
-    `quantity` INT NOT NULL ,
-    `ori_quantity` INT NOT NULL ,
-    `time` TIMESTAMP NOT NULL ,
-    PRIMARY KEY (`id`)
-    ) ENGINE = InnoDB;
 
 SOURCE procedures.sql
 SOURCE sampledata.sql
