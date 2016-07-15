@@ -2,6 +2,7 @@
 #include <fstream>
 #include <iostream>
 #include <unistd.h>
+#include <cstring>
 
 Client::Client(const std::string &config) {
     readConfig(config);
