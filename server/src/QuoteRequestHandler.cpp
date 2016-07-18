@@ -28,7 +28,7 @@ std::vector<Fix42::MessagePtr> QuoteRequestHandler::accept(const Fix42::MessageP
 void QuoteRequestHandler::addToQuoteList(std::shared_ptr<Fix42::RepeatGroup> &quote_list, const Quote &quote) const {
     auto quote_fields = std::make_shared<Fix42::FieldValueContainer>();
     quote_fields->setField<Fix42::kFieldName::kSymbol>(quote.symbol);
-    quote_fields->setField<Fix42::kFieldName::kPrice>(quote.price);
+    quote_fields->setField<Fix42::kFieldName::kPrice>(Quote::toOriginalPrice(quote.price));
     quote_fields->setField<Fix42::kFieldName::kSide>(static_cast<char>(quote.side));
     quote_fields->setField<Fix42::kFieldName::kOrderQty>(quote.quantity);
     quote_list->addUnit(quote_fields);

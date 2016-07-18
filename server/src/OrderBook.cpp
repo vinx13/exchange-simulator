@@ -117,11 +117,7 @@ void OrderBook::match(std::queue<Quote> &buy, std::queue<Quote> &sell) {
 }
 
 void OrderBook::updateQuote(const Quote &quote) {
-    if (quote.quantity == 0) {
-        api_.orderbookDelete(quote.id);
-    } else {
-        api_.orderbookUpdate(quote.id, quote.quantity);
-    }
+    api_.orderbookUpdate(quote.id, quote.quantity);
 }
 
 void OrderBook::updatePrice() {
