@@ -39,6 +39,8 @@ public:
 
     void reloadStatus();
 
+    bool isDupOrdId(const Quote &quote);
+
 private:
     std::string symbol_;
     std::vector<Quote> quotes_;

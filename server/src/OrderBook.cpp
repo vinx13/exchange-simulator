@@ -92,9 +92,9 @@ std::shared_ptr<std::vector<TradeRecord>> OrderBook::doTrade() {
                 sell_quotes.pop();
             }
 
-        } else if (buy_quotes.front().price < sell_quotes.front().price) {
+        } else if (buy_quotes.front().price > sell_quotes.front().price) {
             sell_quotes.pop();
-        } else { /* buy_quotes.front().price > sell_quotes.front().price */
+        } else { /* buy_quotes.front().price < sell_quotes.front().price */
             buy_quotes.pop();
         }
 
@@ -136,4 +136,9 @@ bool OrderBook::isValid(const Quote &quote) const {
         return false;
     }
     return true;
+}
+
+bool OrderBook::isDupOrdId(const Quote &quote) {
+    Quote tmp;
+    return api_.orderbookClientQuery(quote.client, quote.client_order_id, tmp);
 }

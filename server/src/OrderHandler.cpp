@@ -29,10 +29,11 @@ void OrderHandler::handleSingleOrder(const Quote &quote, std::vector<Fix42::Mess
         results.push_back(createMsgAccept(quote));
         return;
     }
-    if (!orderBook.isValid(quote)) {
+    if (!orderBook.isValid(quote)|| orderBook.isDupOrdId(quote)) {
         results.push_back(createMsgReject(quote));
         return;
     }
+
     orderBook.put(quote);
     results.push_back(createMsgAccept(quote));
 
