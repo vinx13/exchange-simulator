@@ -12,7 +12,7 @@ make
 ```
 
 ##Database
-MySQL 5.7  
+MySQL 5.5+  
 To initiate local database, run:
 ```
 ./server/util/migrate/migrate.sh DB_USER DB_PASSWORD
