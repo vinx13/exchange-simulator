@@ -1,9 +1,9 @@
 # Server design guide 
 ## Thread model
-1. Master thread start to listen to a specific socket after server is started
+1. Master thread starts to listen to a specific socket after server is started.
 2. After a new connection arrives, the new file descriptor is put into a queue of certain worker thread.
-3. The worker thread is notified by master thread with socket to fetch file descriptor of the new connection and register it in event loop maintained by libevent
-4. When the worker thread receives a new message, a callback is invoked by libevent. 'dispatcher' choose a handler based on message type to generate response.
+3. The worker thread is notified by master thread with socket to fetch file descriptor of the new connection and register it in event loop maintained by libevent.
+4. When the worker thread receives a new message, a callback is invoked by libevent. 'dispatcher' chooses a handler based on message type to generate response.
 5. The response is serialized to c string and added to write-buffer of libevent.
 
 ## Concurrency and data synchronization
